@@ -23,7 +23,7 @@
 		},
 
 		init: function( editor ) {
-			var lang = editor.lang.placeholder;
+      var lang = editor.lang.placeholder;
 
 			// Register dialog.
 			CKEDITOR.dialog.add( 'placeholder', this.path + 'dialogs/placeholder.js' );
@@ -38,16 +38,32 @@
 				template: '<span class="cke_placeholder">[[]]</span>',
 
 				downcast: function() {
-					return new CKEDITOR.htmlParser.text( '[[' + this.data.name + ']]' );
-				},
+          var name = this.data.name;
+          var params = {
+            value: name,
+            label: name,
+            counterparty: this.data.party === 'counterparty'
+          };
+					return new CKEDITOR.htmlParser.text(
+            '[[' + JSON.stringify(params) + ']]'
+          );
+				}, 
 
 				init: function() {
 					// Note that placeholder markup characters are stripped for the name.
-					this.setData( 'name', this.element.getText().slice( 2, -2 ) );
+          this.setData( 'name', this.element.getText().slice( 2, -2 ) );
+          if (this.element.hasClass('cke_placeholder_counterparty')) {
+            this.setData('party', 'counterparty');
+          }
 				},
 
 				data: function() {
-					this.element.setText( '[[' + this.data.name + ']]' );
+          if (this.data.party === 'counterparty') {
+            this.element.addClass('cke_placeholder_counterparty')
+          } else {
+            this.element.removeClass('cke_placeholder_counterparty')
+          }
+          this.element.setText( '[[' + this.data.name + ']]' );
 				},
 
 				getLabel: function() {
@@ -56,20 +72,25 @@
 			} );
 
 			editor.addCommand('cpplaceholder', {
-				exec: function(e) {
-					var fragment = editor.getSelection().getRanges()[0].extractContents();
-					var container = CKEDITOR.dom.element.createFromHtml('<span class="cke_placeholder" ' +
-						'>[[Company name]]</span>', editor.document);
+				exec: function(editor) {
+					// var fragment = editor.getSelection().getRanges()[0].extractContents();
+					// var container = CKEDITOR.dom.element.createFromHtml('<span class="cke_placeholder" ' +
+					// 	'>[[Company name]]</span>', editor.document);
 
-					fragment.appendTo(container);
-					editor.insertElement(container);
-					editor.widgets.initOn( container, 'placeholder' );
+					// fragment.appendTo(container);
+					// editor.insertElement(container);
+          // editor.widgets.initOn( container, 'placeholder' );
+          editor.commands.placeholder.exec({
+            startupData: {
+              party: 'counterparty'
+            }
+          });
 				}
       });
       editor.addCommand('autosequence', {
 				exec: function(e) {
 					var fragment = editor.getSelection().getRanges()[0].extractContents();
-					var container = CKEDITOR.dom.element.createFromHtml('<span class="cke_placeholder" ' +
+					var container = CKEDITOR.dom.element.createFromHtml('<span class="cke_placeholder cke_placeholder_autosequence" ' +
 						'>[[auto_sequence]]</span>', editor.document);
 
 					fragment.appendTo(container);
@@ -99,27 +120,42 @@
 		},
 
 		afterInit: function( editor ) {
-			var placeholderReplaceRegex = /\[\[([^\[\]])+\]\]/g;
+      // var placeholderReplaceRegex = /\[\[([^\[\]])+\]\]/g;
+      var placeholderReplaceRegex = /\[\[(\{.+?\})]]/g;
+      var that = this;
 
 			editor.dataProcessor.dataFilter.addRules( {
 				text: function( text, node ) {
 					var dtd = node.parent && CKEDITOR.dtd[ node.parent.name ];
 
 					// Skip the case when placeholder is in elements like <title> or <textarea>
-					// but upcast placeholder in custom elements (no DTD).
+          // but upcast placeholder in custom elements (no DTD).
 					if ( dtd && !dtd.span )
-						return;
+            return;
+            
+					return text.replace( placeholderReplaceRegex, function( match, $1 ) {
+            // Creating widget code.
+            var parsed = JSON.parse($1);
+            var classes = '';
 
-					return text.replace( placeholderReplaceRegex, function( match ) {
-						// Creating widget code.
+            if (parsed.counterparty) {
+              classes += ' cke_placeholder_counterparty';
+            }
+
+            if (parsed.label === 'auto_sequence') {
+              classes += ' cke_placeholder_autosequence';
+            }
+
 						var widgetWrapper = null,
 							innerElement = new CKEDITOR.htmlParser.element( 'span', {
-								'class': 'cke_placeholder'
-							} );
+								'class': 'cke_placeholder' + classes
+              } );
 
 						// Adds placeholder identifier as innertext.
-						innerElement.add( new CKEDITOR.htmlParser.text( match ) );
-						widgetWrapper = editor.widgets.wrapElement( innerElement, 'placeholder' );
+						innerElement.add( new CKEDITOR.htmlParser.text( 
+              '[[' + parsed.label + ']]'
+            ));
+            widgetWrapper = editor.widgets.wrapElement( innerElement, 'placeholder' );
 
 						// Return outerhtml of widget wrapper so it will be placed
 						// as replacement.
