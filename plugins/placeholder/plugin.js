@@ -24,6 +24,9 @@
 
 		init: function( editor ) {
       var lang = editor.lang.placeholder;
+      var toggleClass = function(el, className, toggle) {
+        return toggle ? el.addClass(className) : el.removeClass(className);
+      };
 
 			// Register dialog.
 			CKEDITOR.dialog.add( 'placeholder', this.path + 'dialogs/placeholder.js' );
@@ -42,7 +45,8 @@
           var params = {
             value: name,
             label: name,
-            counterparty: this.data.party === 'counterparty'
+            counterparty: this.data.party === 'counterparty',
+            required: this.data.required
           };
 					return new CKEDITOR.htmlParser.text(
             '[[' + JSON.stringify(params) + ']]'
@@ -55,15 +59,14 @@
           if (this.element.hasClass('cke_placeholder_counterparty')) {
             this.setData('party', 'counterparty');
           }
+          this.setData('required', this.element.hasClass('cke_placeholder_required'));
 				},
 
 				data: function() {
-          if (this.data.party === 'counterparty') {
-            this.element.addClass('cke_placeholder_counterparty')
-          } else {
-            this.element.removeClass('cke_placeholder_counterparty')
-          }
-          this.element.setText( '[[' + this.data.name + ']]' );
+          var element = this.element;
+          toggleClass(element, 'cke_placeholder_counterparty', this.data.party === 'counterparty');
+          toggleClass(element, 'cke_placeholder_required', this.data.required);
+          element.setText( '[[' + this.data.name + ']]' );
 				},
 
 				getLabel: function() {
@@ -144,6 +147,10 @@
 
             if (parsed.label === 'auto_sequence') {
               classes += ' cke_placeholder_autosequence';
+            }
+
+            if (parsed.required) {
+              classes += ' cke_placeholder_required';
             }
 
 						var widgetWrapper = null,

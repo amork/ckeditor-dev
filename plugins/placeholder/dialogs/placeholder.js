@@ -54,7 +54,19 @@ CKEDITOR.dialog.add( 'placeholder', function( editor ) {
 						commit: function( widget ) {
 							widget.setData( 'name', this.getValue() );
 						}
-					}
+          },
+          {
+            type: 'checkbox',
+            id: 'required',
+            label: 'Required field',
+            style: '',
+            setup: function( widget ) {
+							this.setValue( widget.data.required );
+						},
+						commit: function( widget ) {
+							widget.setData( 'required', this.getValue() );
+						}
+          }
 				]
 			}
 		]
