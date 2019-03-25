@@ -6,9 +6,9 @@
 			minWidth:       300,
 			minHeight:      100,
 			onShow: function() {
-				// var errors = document.getElementById('singleparagraphValidate_errors');
-                //
-				// errors.innerHTML = CKEDITOR._.errors.join('\n');
+				var errors = document.getElementById('singleparagraphValidate_errors');
+
+				errors.innerHTML = CKEDITOR._.errors.join('\n');
 
 				var buttonOk = document.querySelector('a.cke_dialog_ui_button_ok');
 

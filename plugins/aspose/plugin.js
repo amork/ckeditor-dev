@@ -2,6 +2,7 @@
 	var removePgbrReg = /<pgbr[^>][^>]*>(.*?)<\/pgbr>/g;
 	var STYLES_THAT_NEED_SET_AS_DEFAULT = ['font-size', 'font-weight', 'font-family', 'font-style'];
 	var throttle = false;
+	var debounced = null;
 
 	function defaultStyle(editor, defaultStyles) {
 		var self = this;
@@ -179,24 +180,36 @@
 				}
 			});
 
-			// Remove page break on paste
 			editor.on('paste', function (event) {
 				event.data.dataValue = event.data.dataValue.replace(removePgbrReg, '');
+
+				if (config.singleParagraphEdit) {
+					setTimeout(function() {
+						useOnlyOneParagraph(editor, $(editor.editable().$).clone());
+					}, 20);
+				}
 			});
 
 			if (config.singleParagraphEdit) {
-				editor.on('change', function () {
-					var $editor = $(editor.editable().$);
-					var errors = validateParagraph($editor);
-
-					if (errors.length && !throttle) {
-						throttle = true;
-
-						setTimeout(function () { throttle = false }, 2000);
-
-						CKEDITOR._.errors = errors;
-						CKEDITOR.dialog.getCurrent() || editor.openDialog('singleParagraphValidate');
+				editor.on('change', function() {
+					if (debounced) {
+						clearTimeout(debounced);
+						debounced = null;
 					}
+
+					debounced = setTimeout(function () {
+						var $editor = $(editor.editable().$);
+						var errors = validateParagraph($editor);
+
+						if (errors.length && !throttle) {
+							throttle = true;
+
+							setTimeout(function () { throttle = false }, 2000);
+
+							CKEDITOR._.errors = errors;
+							CKEDITOR.dialog.getCurrent() || editor.openDialog('singleParagraphValidate');
+						}
+					}, 100);
 				});
 
 				CKEDITOR.dialog.add('singleParagraphValidate', this.path + 'dialogs/singleParagraphValidate.js');
@@ -251,3 +264,18 @@
 	});
 })();
 
+function useOnlyOneParagraph(editor, $html) {
+	var innerHTML = '';
+	var children = $html.children();
+	var html = children[0].innerHTML.replace(/<\/?(p|div|h\d)[^<>]*>/g, '');
+
+	debugger
+	for(let i = 1; i < children.length; i++) {
+		html += children[i].outerHTML.replace(/<\/?(p|div|h\d)[^<>]*>/g, '');
+		children[i].parentNode.removeChild(children[i]);
+	}
+
+	children[0].innerHTML = html;
+
+	editor.setData($html.html());
+}
