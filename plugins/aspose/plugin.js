@@ -191,26 +191,26 @@
 			});
 
 			if (config.singleParagraphEdit) {
-				editor.on('change', function() {
-					if (debounced) {
-						clearTimeout(debounced);
-						debounced = null;
-					}
+				// editor.on('change', function() {
+				// 	if (debounced) {
+				// 		clearTimeout(debounced);
+				// 		debounced = null;
+				// 	}
 
-					debounced = setTimeout(function () {
-						var $editor = $(editor.editable().$);
-						var errors = validateParagraph($editor);
+				// 	debounced = setTimeout(function () {
+				// 		var $editor = $(editor.editable().$);
+				// 		var errors = validateParagraph($editor);
 
-						if (errors.length && !throttle) {
-							throttle = true;
+				// 		if (errors.length && !throttle) {
+				// 			throttle = true;
 
-							setTimeout(function () { throttle = false }, 2000);
+				// 			setTimeout(function () { throttle = false }, 2000);
 
-							CKEDITOR._.errors = errors;
-							CKEDITOR.dialog.getCurrent() || editor.openDialog('singleParagraphValidate');
-						}
-					}, 100);
-				});
+				// 			CKEDITOR._.errors = errors;
+				// 			CKEDITOR.dialog.getCurrent() || editor.openDialog('singleParagraphValidate');
+				// 		}
+				// 	}, 100);
+				// });
 
 				CKEDITOR.dialog.add('singleParagraphValidate', this.path + 'dialogs/singleParagraphValidate.js');
 			}
@@ -265,17 +265,43 @@
 })();
 
 function useOnlyOneParagraph(editor, $html) {
-	var innerHTML = '';
 	var children = $html.children();
-	var html = children[0].innerHTML.replace(/<\/?(p|div|h\d)[^<>]*>/g, '');
+	var TAGS_FOR_SKIP_CONVERTING = ['OL', 'UL', 'LI', 'TABLE', 'TR', 'TD'];
+	var TAGS_REPLACER_REG = /(<\/?)(p|div)/g;
+	var skipAppend = false;
 
-	debugger
-	for(let i = 1; i < children.length; i++) {
-		html += children[i].outerHTML.replace(/<\/?(p|div|h\d)[^<>]*>/g, '');
-		children[i].parentNode.removeChild(children[i]);
+	if (children.length < 1 && $(children[0]).find('p, div').size === 0) {
+		return;
 	}
 
-	children[0].innerHTML = html;
+	for(var i = 0; i < children.length; i++) {
+		var child = children[i];
+
+		if (['ING', 'PGBR'].indexOf(child.tagName) === -1 && !child.innerText) {
+			child.parentNode.removeChild(child);
+		}
+	}
+
+	children = $html.children();
+
+	for(var i = 0; i < children.length; i++) {
+		if (TAGS_FOR_SKIP_CONVERTING.indexOf(children[i].tagName) !== -1) {
+			skipAppend = true;
+		}
+	}
+
+	if (!skipAppend) {
+		children[0].innerHTML = children[0].innerHTML.replace(TAGS_REPLACER_REG, '$1span');
+
+		for(var i = 1; i < children.length; i++) {
+			var child = children[i];
+			var newChild = document.createElement('span', child.attributes);
+
+			newChild.innerHTML = child.innerHTML.replace(TAGS_REPLACER_REG, '$1span');
+			children[0].appendChild(newChild);
+			child.parentNode.removeChild(child);
+		}
+	}
 
 	editor.setData($html.html());
 }
