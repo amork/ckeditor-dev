@@ -2,6 +2,7 @@
 	var removePgbrReg = /<pgbr[^>][^>]*>(.*?)<\/pgbr>/g;
 	var STYLES_THAT_NEED_SET_AS_DEFAULT = ['font-size', 'font-weight', 'font-family', 'font-style'];
 	var throttle = false;
+	var debounced = null;
 
 	function defaultStyle(editor, defaultStyles) {
 		var self = this;
@@ -179,25 +180,37 @@
 				}
 			});
 
-			// Remove page break on paste
 			editor.on('paste', function (event) {
 				event.data.dataValue = event.data.dataValue.replace(removePgbrReg, '');
+
+				if (config.singleParagraphEdit) {
+					setTimeout(function() {
+						useOnlyOneParagraph(editor, $(editor.editable().$).clone());
+					}, 20);
+				}
 			});
 
 			if (config.singleParagraphEdit) {
-				editor.on('change', function () {
-					var $editor = $(editor.editable().$);
-					var errors = validateParagraph($editor);
+				// editor.on('change', function() {
+				// 	if (debounced) {
+				// 		clearTimeout(debounced);
+				// 		debounced = null;
+				// 	}
 
-					if (errors.length && !throttle) {
-						throttle = true;
+				// 	debounced = setTimeout(function () {
+				// 		var $editor = $(editor.editable().$);
+				// 		var errors = validateParagraph($editor);
 
-						setTimeout(function () { throttle = false }, 2000);
+				// 		if (errors.length && !throttle) {
+				// 			throttle = true;
 
-						CKEDITOR._.errors = errors;
-						CKEDITOR.dialog.getCurrent() || editor.openDialog('singleParagraphValidate');
-					}
-				});
+				// 			setTimeout(function () { throttle = false }, 2000);
+
+				// 			CKEDITOR._.errors = errors;
+				// 			CKEDITOR.dialog.getCurrent() || editor.openDialog('singleParagraphValidate');
+				// 		}
+				// 	}, 100);
+				// });
 
 				CKEDITOR.dialog.add('singleParagraphValidate', this.path + 'dialogs/singleParagraphValidate.js');
 			}
@@ -251,3 +264,44 @@
 	});
 })();
 
+function useOnlyOneParagraph(editor, $html) {
+	var children = $html.children();
+	var TAGS_FOR_SKIP_CONVERTING = ['OL', 'UL', 'LI', 'TABLE', 'TR', 'TD'];
+	var TAGS_REPLACER_REG = /(<\/?)(p|div)/g;
+	var skipAppend = false;
+
+	if (children.length < 1 && $(children[0]).find('p, div').size === 0) {
+		return;
+	}
+
+	for(var i = 0; i < children.length; i++) {
+		var child = children[i];
+
+		if (['ING', 'PGBR'].indexOf(child.tagName) === -1 && !child.innerText) {
+			child.parentNode.removeChild(child);
+		}
+	}
+
+	children = $html.children();
+
+	for(var i = 0; i < children.length; i++) {
+		if (TAGS_FOR_SKIP_CONVERTING.indexOf(children[i].tagName) !== -1) {
+			skipAppend = true;
+		}
+	}
+
+	if (!skipAppend) {
+		children[0].innerHTML = children[0].innerHTML.replace(TAGS_REPLACER_REG, '$1span');
+
+		for(var i = 1; i < children.length; i++) {
+			var child = children[i];
+			var newChild = document.createElement('span', child.attributes);
+
+			newChild.innerHTML = child.innerHTML.replace(TAGS_REPLACER_REG, '$1span');
+			children[0].appendChild(newChild);
+			child.parentNode.removeChild(child);
+		}
+	}
+
+	editor.setData($html.html());
+}
