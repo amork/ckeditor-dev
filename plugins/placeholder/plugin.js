@@ -24,6 +24,9 @@
 
 		init: function( editor ) {
       var lang = editor.lang.placeholder;
+      var toggleClass = function(el, className, toggle) {
+        return toggle ? el.addClass(className) : el.removeClass(className);
+      };
 
 			// Register dialog.
 			CKEDITOR.dialog.add( 'placeholder', this.path + 'dialogs/placeholder.js' );
@@ -42,12 +45,13 @@
           var params = {
             value: name,
             label: name,
-            counterparty: this.data.party === 'counterparty'
+            counterparty: this.data.party === 'counterparty',
+            required: this.data.required
           };
 					return new CKEDITOR.htmlParser.text(
             '[[' + JSON.stringify(params) + ']]'
           );
-				},
+				}, 
 
 				init: function() {
 					// Note that placeholder markup characters are stripped for the name.
@@ -55,15 +59,14 @@
           if (this.element.hasClass('cke_placeholder_counterparty')) {
             this.setData('party', 'counterparty');
           }
+          this.setData('required', this.element.hasClass('cke_placeholder_required'));
 				},
 
 				data: function() {
-          if (this.data.party === 'counterparty') {
-            this.element.addClass('cke_placeholder_counterparty')
-          } else {
-            this.element.removeClass('cke_placeholder_counterparty')
-          }
-          this.element.setText( '[[' + this.data.name + ']]' );
+          var element = this.element;
+          toggleClass(element, 'cke_placeholder_counterparty', this.data.party === 'counterparty');
+          toggleClass(element, 'cke_placeholder_required', this.data.required);
+          element.setText( '[[' + this.data.name + ']]' );
 				},
 
 				getLabel: function() {
@@ -115,7 +118,7 @@
 				label: lang.autoSequence,
 				command: 'autosequence',
 				toolbar: 'insert,5',
-				icon: 'autosequence'
+				icon: 'placeholder'
 			} );
 		},
 
@@ -132,7 +135,7 @@
           // but upcast placeholder in custom elements (no DTD).
 					if ( dtd && !dtd.span )
             return;
-
+            
 					return text.replace( placeholderReplaceRegex, function( match, $1 ) {
             // Creating widget code.
             var parsed = JSON.parse($1);
@@ -146,13 +149,17 @@
               classes += ' cke_placeholder_autosequence';
             }
 
+            if (parsed.required) {
+              classes += ' cke_placeholder_required';
+            }
+
 						var widgetWrapper = null,
 							innerElement = new CKEDITOR.htmlParser.element( 'span', {
 								'class': 'cke_placeholder' + classes
               } );
 
 						// Adds placeholder identifier as innertext.
-						innerElement.add( new CKEDITOR.htmlParser.text(
+						innerElement.add( new CKEDITOR.htmlParser.text( 
               '[[' + parsed.label + ']]'
             ));
             widgetWrapper = editor.widgets.wrapElement( innerElement, 'placeholder' );
