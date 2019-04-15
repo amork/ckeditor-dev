@@ -51,7 +51,7 @@
 					return new CKEDITOR.htmlParser.text(
             '[[' + JSON.stringify(params) + ']]'
           );
-				},
+				}, 
 
 				init: function() {
 					// Note that placeholder markup characters are stripped for the name.
@@ -118,7 +118,7 @@
 				label: lang.autoSequence,
 				command: 'autosequence',
 				toolbar: 'insert,5',
-				icon: 'autosequence'
+				icon: 'placeholder'
 			} );
 		},
 
@@ -135,7 +135,7 @@
           // but upcast placeholder in custom elements (no DTD).
 					if ( dtd && !dtd.span )
             return;
-
+            
 					return text.replace( placeholderReplaceRegex, function( match, $1 ) {
             // Creating widget code.
             var parsed = JSON.parse($1);
@@ -159,7 +159,7 @@
               } );
 
 						// Adds placeholder identifier as innertext.
-						innerElement.add( new CKEDITOR.htmlParser.text(
+						innerElement.add( new CKEDITOR.htmlParser.text( 
               '[[' + parsed.label + ']]'
             ));
             widgetWrapper = editor.widgets.wrapElement( innerElement, 'placeholder' );
