@@ -1150,19 +1150,19 @@
 				}
 
 				// Webkit: avoid from editing form control elements content.
-				if ( CKEDITOR.env.webkit ) {
-					// Prevent from tick checkbox/radiobox/select
-					this.attachListener( this, 'click', function( ev ) {
-						if ( ev.data.getTarget().is( 'input', 'select' ) )
-							ev.data.preventDefault();
-					} );
+				// if ( CKEDITOR.env.webkit ) {
+				// 	// Prevent from tick checkbox/radiobox/select
+				// 	this.attachListener( this, 'click', function( ev ) {
+				// 		if ( ev.data.getTarget().is( 'input', 'select' ) )
+				// 			ev.data.preventDefault();
+				// 	} );
 
-					// Prevent from editig textfield/textarea value.
-					this.attachListener( this, 'mouseup', function( ev ) {
-						if ( ev.data.getTarget().is( 'input', 'textarea' ) )
-							ev.data.preventDefault();
-					} );
-				}
+				// 	// Prevent from editig textfield/textarea value.
+				// 	this.attachListener( this, 'mouseup', function( ev ) {
+				// 		if ( ev.data.getTarget().is( 'input', 'textarea' ) )
+				// 			ev.data.preventDefault();
+				// 	} );
+				// }
 
 				// Prevent Webkit/Blink from going rogue when joining
 				// blocks on BACKSPACE/DEL (#11861,#9998).
@@ -1271,15 +1271,15 @@
 		var editor = evt.editor;
 
 		// and flag that the element was locked by our code so it'll be editable by the editor functions (#6046).
-		editor.on( 'insertElement', function( evt ) {
-			var element = evt.data;
-			if ( element.type == CKEDITOR.NODE_ELEMENT && ( element.is( 'input' ) || element.is( 'textarea' ) ) ) {
-				// // The element is still not inserted yet, force attribute-based check.
-				if ( element.getAttribute( 'contentEditable' ) != 'false' )
-					element.data( 'cke-editable', element.hasAttribute( 'contenteditable' ) ? 'true' : '1' );
-				element.setAttribute( 'contentEditable', false );
-			}
-		} );
+		// editor.on( 'insertElement', function( evt ) {
+		// 	var element = evt.data;
+		// 	if ( element.type == CKEDITOR.NODE_ELEMENT && ( element.is( 'input' ) || element.is( 'textarea' ) ) ) {
+		// 		// // The element is still not inserted yet, force attribute-based check.
+		// 		if ( element.getAttribute( 'contentEditable' ) != 'false' )
+		// 			element.data( 'cke-editable', element.hasAttribute( 'contenteditable' ) ? 'true' : '1' );
+		// 		element.setAttribute( 'contentEditable', false );
+		// 	}
+		// } );
 
 		editor.on( 'selectionChange', function( evt ) {
 			if ( editor.readOnly )
