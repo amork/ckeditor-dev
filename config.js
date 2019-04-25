@@ -135,6 +135,7 @@ CKEDITOR.editorConfig = function( config ) {
 		'Trebuchet MS;' +
     'Verdana;' +
 		'Lato;' +
+		'Century Gothic;' +
 		'Cambria;';
 
 	config.font_style = {
