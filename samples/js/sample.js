@@ -18,7 +18,7 @@ var initSample = ( function() {
 		var editorElement = CKEDITOR.document.getById( 'editor' );
 
 		editorElement.setAttribute( 'contenteditable', 'true' );
-		var editor = CKEDITOR.inline( 'editor', {
+		var editor = CKEDITOR.replace( 'editor', {
 			stylesSet: [
 				{ name : 'dasdf', element : 'p', styles: { 'color': 'red' } },
 				{ name: 'My Div Class', element: 'div'}

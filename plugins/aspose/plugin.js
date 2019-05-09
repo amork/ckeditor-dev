@@ -124,6 +124,27 @@
 	};
 
 	CKEDITOR.plugins.add('aspose', {
+		afterInit: function (editor) {
+			setTimeout(function () {
+				var editorDOMContainer = editor.editable().$
+
+				editorDOMContainer.addEventListener('click', function(e) {
+					var target = e.target;
+
+					if (target.tagName !== 'INPUT') {
+						return;
+					}
+
+					if (target.hasAttribute('checked')) {
+						target.removeAttribute('checked');
+						target.checked = false;
+					} else {
+						target.setAttribute( 'checked', 'checked' );
+						target.checked = true;
+					}
+				})
+			}, 2e2)
+		},
 		init: function (editor) {
 			var config = editor.config;
 
