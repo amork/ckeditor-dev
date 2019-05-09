@@ -125,25 +125,25 @@
 
 	CKEDITOR.plugins.add('aspose', {
 		afterInit: function (editor) {
-			var editorDOMContainer = editor.element.$
+			setTimeout(function () {
+				var editorDOMContainer = editor.editable().$
 
-			var inputs = editorDOMContainer.querySelectorAll('input[type=checkbox]')
+				editorDOMContainer.addEventListener('click', function(e) {
+					var target = e.target;
 
-			editorDOMContainer.addEventListener('click', function(e) {
-				var target = e.target;
+					if (target.tagName !== 'INPUT') {
+						return;
+					}
 
-				if (target.tagName !== 'INPUT') {
-					return;
-				}
-
-				if (target.hasAttribute('checked')) {
-					target.removeAttribute('checked');
-					target.checked = false;
-				} else {
-					target.setAttribute( 'checked', 'checked' );
-					target.checked = true;
-				}
-			})
+					if (target.hasAttribute('checked')) {
+						target.removeAttribute('checked');
+						target.checked = false;
+					} else {
+						target.setAttribute( 'checked', 'checked' );
+						target.checked = true;
+					}
+				})
+			}, 2e2)
 		},
 		init: function (editor) {
 			var config = editor.config;
