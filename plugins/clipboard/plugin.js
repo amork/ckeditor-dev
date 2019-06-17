@@ -1256,7 +1256,7 @@
 				$1: {
 					elements: setUpTags(),
 					attributes: true,
-					styles: allowStyles ? true : false,
+					styles: !editor.config.pasteDisallowStyles && allowStyles ? true : false,
 					classes: false
 				}
 			} );
@@ -1301,7 +1301,7 @@
 		if (filter) {
 			filter.applyTo( fragment, true, false, editor.activeEnterMode );
 		}
-			
+
 		fragment.writeHtml( writer );
 
 		return writer.getHtml();
