@@ -212,26 +212,23 @@
 			});
 
 			if (config.singleParagraphEdit) {
-				// editor.on('change', function() {
-				// 	if (debounced) {
-				// 		clearTimeout(debounced);
-				// 		debounced = null;
-				// 	}
+				editor.on('change', function() {
+				if (debounced) {
+					clearTimeout(debounced);
+					debounced = null;
+				}
 
-				// 	debounced = setTimeout(function () {
-				// 		var $editor = $(editor.editable().$);
-				// 		var errors = validateParagraph($editor);
+				debounced = setTimeout(function () {
+					var $editor = $(editor.editable().$);
+					var errors = validateParagraph($editor);
 
-				// 		if (errors.length && !throttle) {
-				// 			throttle = true;
-
-				// 			setTimeout(function () { throttle = false }, 2000);
-
-				// 			CKEDITOR._.errors = errors;
-				// 			CKEDITOR.dialog.getCurrent() || editor.openDialog('singleParagraphValidate');
-				// 		}
-				// 	}, 100);
-				// });
+					if (errors.length && !throttle) {
+						removeTableInList($editor);
+						clearEmptyNodes($editor);
+						wrapMultipleNodesIntoOne($editor);
+					}
+				}, 100);
+				});
 
 				CKEDITOR.dialog.add('singleParagraphValidate', this.path + 'dialogs/singleParagraphValidate.js');
 			}
@@ -326,3 +323,30 @@ function useOnlyOneParagraph(editor, $html) {
 
 	editor.setData($html.html());
 }
+
+function clearEmptyNodes($editor) {
+	$editor.children().each(function(index, item) {
+		if (!item.innerText) {
+			item.parentNode.removeChild(item);
+		}
+	});
+}
+
+function removeTableInList($editor) {
+	var $tableInList = $editor.find("ul > li table");
+	var $ul = $tableInList.parent("ul");
+	$tableInList.each(function(index, value) {
+		var $table = $(value);
+		$ul.after($table);
+		$table.parent("li").remove();
+	});
+
+	$("ul:empty").remove();
+}
+
+function wrapMultipleNodesIntoOne($editor) {
+	if ($editor.children.length > 1) {
+		$editor.wrapInner($("<div/>"));
+	}
+}
+
