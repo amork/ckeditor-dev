@@ -2,7 +2,6 @@
 	CKEDITOR.plugins.add( 'smartfields', {
 		lang: 'en,ru', // %REMOVE_LINE_CORE%
     hidpi: true, // %REMOVE_LINE_CORE%
-    
 		onLoad: function() {
 			// Register styles for placeholder widget frame.
 			CKEDITOR.addCss( '.cke_placeholder{background-color:#ff0}' );
@@ -20,13 +19,13 @@
         },
 
         init: function() {
-          this.startGroup( 'Smart Fields' ); 
+          this.startGroup( 'Smart Fields' );
 
-          var self = this;    
+          var self = this;
           // this.startGroup( 'My Dropdown Group #1' );
           var smartFields = editor.config.smartFields || [];
           smartFields.forEach(function(smartField) {
-            self.add( smartField.value, smartField.label );          
+            self.add( smartField.value, smartField.label );
           })
         },
 
@@ -42,7 +41,7 @@
 					editor.insertElement(container);
 					editor.widgets.initOn( container, 'placeholder' );
         }
-    } );       
+    } );
 		}
 	} );
 
