@@ -51,7 +51,7 @@
 					return new CKEDITOR.htmlParser.text(
             '[[' + JSON.stringify(params) + ']]'
           );
-				}, 
+				},
 
 				init: function() {
 					// Note that placeholder markup characters are stripped for the name.
@@ -124,7 +124,7 @@
 
 		afterInit: function( editor ) {
       // var placeholderReplaceRegex = /\[\[([^\[\]])+\]\]/g;
-      var placeholderReplaceRegex = /\[\[(\{.+?\})]]/g;
+      var placeholderReplaceRegex = /\[\[(\{.+?\})]](\s+&#8203;)?/g;
       var that = this;
 
 			editor.dataProcessor.dataFilter.addRules( {
@@ -135,7 +135,7 @@
           // but upcast placeholder in custom elements (no DTD).
 					if ( dtd && !dtd.span )
             return;
-            
+
 					return text.replace( placeholderReplaceRegex, function( match, $1 ) {
             // Creating widget code.
             var parsed = JSON.parse($1);
@@ -159,14 +159,14 @@
               } );
 
 						// Adds placeholder identifier as innertext.
-						innerElement.add( new CKEDITOR.htmlParser.text( 
+						innerElement.add( new CKEDITOR.htmlParser.text(
               '[[' + parsed.label + ']]'
             ));
             widgetWrapper = editor.widgets.wrapElement( innerElement, 'placeholder' );
 
 						// Return outerhtml of widget wrapper so it will be placed
 						// as replacement.
-						return widgetWrapper.getOuterHtml();
+						return widgetWrapper.getOuterHtml() + '&nbsp;';
 					} );
 				}
 			} );
