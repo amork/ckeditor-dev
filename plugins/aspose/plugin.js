@@ -126,7 +126,7 @@
 	CKEDITOR.plugins.add('aspose', {
 		afterInit: function (editor) {
 			setTimeout(function () {
-				var editorDOMContainer = editor.editable().$
+				var editorDOMContainer = editor.editable().$;
 
 				editorDOMContainer.addEventListener('click', function(e) {
 					var target = e.target;
@@ -152,8 +152,7 @@
 
 			editor.on('key', function (event) {
 				var kc = event.data.keyCode,
-					csa = ~(CKEDITOR.CTRL | CKEDITOR.SHIFT | CKEDITOR.ALT),
-					classname;
+					csa = ~(CKEDITOR.CTRL | CKEDITOR.SHIFT | CKEDITOR.ALT);
 				if (kc == 13 && (kc & csa) == 13) { //enter
 					setTimeout(function () {
 						var element = editor.getSelection().getStartElement();
@@ -165,7 +164,6 @@
 							}
 						}
 					}, 40);
-
 				}
 			});
 
@@ -211,8 +209,7 @@
 				}
 			});
 
-			if (config.singleParagraphEdit) {
-				editor.on('change', function() {
+			editor.on('change', function() {
 				if (debounced) {
 					clearTimeout(debounced);
 					debounced = null;
@@ -222,16 +219,17 @@
 					var $editor = $(editor.editable().$);
 					var errors = validateParagraph($editor);
 
-					if (errors.length && !throttle) {
-						removeTableInList($editor);
-						clearEmptyNodes($editor);
-						wrapMultipleNodesIntoOne($editor);
+					if(config.singleParagraphEdit) {
+						if (errors.length && !throttle) {
+							removeTableInList($editor);
+							clearEmptyNodes($editor);
+							wrapMultipleNodesIntoOne($editor);
+						}
 					}
+
+					setTdWidth($editor);
 				}, 100);
 				});
-
-				CKEDITOR.dialog.add('singleParagraphValidate', this.path + 'dialogs/singleParagraphValidate.js');
-			}
 
 			editor.element.$.parentNode.addEventListener('keydown', function (e) {
 				if (e.keyCode !== 46 && e.keyCode !== 8) {
@@ -350,3 +348,12 @@ function wrapMultipleNodesIntoOne($editor) {
 	}
 }
 
+function setTdWidth($editor) {
+	var ptPxCoef = 0.75;
+	
+	$editor.find('td,th').each(function() {
+		if (!this.style.width) {
+			this.style.width = parseInt(window.getComputedStyle(this).width, 10) * ptPxCoef + 'pt';
+		}
+	})
+}

@@ -58,9 +58,9 @@ var initSample = ( function() {
 			]
     } );
 
-    editor.on('change', function() {
-      console.log('change', editor.getData())
-    })
+    // editor.on('change', function() {
+    //   console.log('change', editor.getData())
+    // })
 
 		// editor.on('lite:init', function(event) {
 		// 	this._lite = event.data.lite;

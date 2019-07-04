@@ -98,7 +98,7 @@
 					}
 				}
 
-				tableWidth = parseInt(window.getComputedStyle(element, null).getPropertyValue('width'));
+				tableWidth = parseInt(window.getComputedStyle(element, null).getPropertyValue('width'), 10);
 
 				if (tableWidth > 700) {
 					tableWidth -= editor.config.editor_indents;

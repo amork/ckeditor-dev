@@ -114,7 +114,7 @@
 		var isPt = /pt$/;
 		var isPx = /px$/;
 		var tableWidthCoefficient = 1;
-		var tableCalculatedWidth = parseInt(window.getComputedStyle(table.$, null).width);
+		var tableCalculatedWidth = parseInt(window.getComputedStyle(table.$, null).width, 10);
 
 		if (tableStyleWidth) {
 			if (isPt.test(tableStyleWidth)) {
