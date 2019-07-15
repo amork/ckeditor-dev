@@ -48,7 +48,7 @@
 			errors.push(POSSIBLE_ERRORS[1])
 		}
 
-		if (['OL', 'UL'].indexOf(children[0].tagName) !== -1 && children[0].children.length > 1) {
+		if (['OL', 'UL'].indexOf(children[0] && children[0].tagName) !== -1 && children[0] && children[0].children.length > 1) {
 			errors.push(POSSIBLE_ERRORS[3])
 		}
 
@@ -350,7 +350,7 @@ function wrapMultipleNodesIntoOne($editor) {
 
 function setTdWidth($editor) {
 	var ptPxCoef = 0.75;
-	
+
 	$editor.find('td,th').each(function() {
 		if (!this.style.width) {
 			this.style.width = parseInt(window.getComputedStyle(this).width, 10) * ptPxCoef + 'pt';
