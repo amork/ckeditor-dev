@@ -32,6 +32,7 @@ var initSample = ( function() {
         'font-weight': 'bold',
         'font-family': 'Lato'
 			},
+			filebrowserUploadUrl: 'base64',
 			singleParagraphEdit: true,
 			toolbar: [
 				{name: 'font', items: ['Styles', 'Font', 'FontSize']},
