@@ -305,7 +305,7 @@
 					trueType,
 					// Default is 'html'.
 					defaultType = editor.config.clipboard_defaultContentType || 'html',
-					transferType = dataObj.dataTransfer.getTransferType( editor);
+					transferType = dataObj.dataTransfer.getTransferType(editor);
 
 				// If forced type is 'html' we don't need to know true data type.
 				if ( type == 'html' || dataObj.preSniffing == 'html' ) {
@@ -355,6 +355,23 @@
 			// events chain.
 			editor.on( 'paste', function( evt ) {
 				var data = evt.data;
+				var defaultStyles = editor.config.defaultStyles
+
+				// Set default styles on paste
+				if (data.dataValue && defaultStyles) {
+					var div = document.createElement('DIV');
+
+					div.innerHTML = data.dataValue;
+					var children = div.children;
+
+					for(var i = 0; i < children.length; i++) {
+						Object.keys(defaultStyles).forEach(function(key) {
+							children[i].style[key] = defaultStyles[key];
+						});
+					}
+
+					data.dataValue = div.innerHTML;
+				}
 
 				if ( data.dataValue ) {
 					editor.insertHtml( data.dataValue, data.type, data.range );
