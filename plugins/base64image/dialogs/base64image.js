@@ -197,12 +197,6 @@ CKEDITOR.dialog.add('base64imageDialog', function(editor) {
 				widths: ['70px'],
 				children: [
 					{
-						type: 'checkbox',
-						id: 'filecheckbox',
-						style: 'margin-top:5px',
-						label: editor.lang.common.upload + ':'
-					},
-					{
 						type: 'file',
 						id: 'file',
 						label: '',
@@ -247,19 +241,6 @@ CKEDITOR.dialog.add('base64imageDialog', function(editor) {
 		minWidth: 450,
 		minHeight: 180,
 		onLoad: function() {
-			if (fsupport) {
-				/* Get checkboxes */
-				urlCB = this.getContentElement('tab-source', 'urlcheckbox')
-				fileCB = this.getContentElement('tab-source', 'filecheckbox')
-
-				/* Checkbox Events */
-				urlCB.getInputElement().on('click', function() {
-					imagePreview('url')
-				})
-				fileCB.getInputElement().on('click', function() {
-					imagePreview('file')
-				})
-			}
 
 			/* Get url input element */
 			urlI = this.getContentElement('tab-source', 'url')
