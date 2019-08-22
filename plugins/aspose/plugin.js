@@ -8,14 +8,9 @@
 		var self = this;
 
 		this.defaultStyles = defaultStyles || {};
-		this.styleNamesThatNeedSet = [];
 		this.editor = editor;
 
-		for (var i = 0; i < STYLES_THAT_NEED_SET_AS_DEFAULT.length; i++) {
-			if (this.defaultStyles[STYLES_THAT_NEED_SET_AS_DEFAULT[i]]) {
-				this.styleNamesThatNeedSet.push(STYLES_THAT_NEED_SET_AS_DEFAULT[i]);
-			}
-		}
+		this.styleNamesThatNeedSet = Object.keys(this.defaultStyles)
 
 		this.styleNamesThatNeedSet.length && editor.on('key', function (event) {
 			if (event.data.domEvent.$.key.length === 1) {
