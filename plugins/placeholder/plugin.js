@@ -51,7 +51,7 @@
 					return new CKEDITOR.htmlParser.text(
             '[[' + JSON.stringify(params) + ']]'
           );
-				}, 
+				},
 
 				init: function() {
 					// Note that placeholder markup characters are stripped for the name.
@@ -101,10 +101,21 @@
 					editor.widgets.initOn( container, 'placeholder' );
 				}
 			});
+      editor.addCommand('addField', {
+				exec: function(e) {
+					var fragment = e.getSelection().getRanges()[0].cloneContents().$;
+
+					editor.commands.placeholder.exec({
+            startupData: {
+              name: fragment.textContent || ''
+            }
+          });
+				}
+			});
 
 			editor.ui.addButton && editor.ui.addButton( 'CreatePlaceholder', {
 				label: lang.toolbar,
-				command: 'placeholder',
+				command: 'addField',
 				toolbar: 'insert,5',
 				icon: 'placeholder'
 			} );
@@ -135,7 +146,7 @@
           // but upcast placeholder in custom elements (no DTD).
 					if ( dtd && !dtd.span )
             return;
-            
+
 					return text.replace( placeholderReplaceRegex, function( match, $1 ) {
             // Creating widget code.
             var parsed = JSON.parse($1);
@@ -159,7 +170,7 @@
               } );
 
 						// Adds placeholder identifier as innertext.
-						innerElement.add( new CKEDITOR.htmlParser.text( 
+						innerElement.add( new CKEDITOR.htmlParser.text(
               '[[' + parsed.label + ']]'
             ));
             widgetWrapper = editor.widgets.wrapElement( innerElement, 'placeholder' );
