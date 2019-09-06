@@ -24,41 +24,6 @@
 		})
 	}
 
-
-	function validateParagraph($editor) {
-		var POSSIBLE_ERRORS = [
-			'more than one element first level',
-			'have table inside',
-			'have more than one list',
-			'have more than one inserted paragraph'
-			// 'have list inside'
-		];
-		var errors = [];
-		var children = $editor.children();
-
-		if ($editor.children().length > 1) {
-			errors.push(POSSIBLE_ERRORS[0])
-		}
-
-		if ($editor.find('p p').length > 0) {
-			errors.push(POSSIBLE_ERRORS[4])
-		}
-
-		if ($editor.find('* table').length && $editor.text().length > $editor.find('table').text().length) {
-			errors.push(POSSIBLE_ERRORS[1])
-		}
-
-		if (['OL', 'UL'].indexOf(children[0] && children[0].tagName) !== -1 && children[0] && children[0].children.length > 1) {
-			errors.push(POSSIBLE_ERRORS[3])
-		}
-
-		// if ($editor.find('p ol, p ul').length) {
-		// 	errors.push(POSSIBLE_ERRORS[4])
-		// }
-
-		return errors;
-	}
-
 	defaultStyle.prototype = {
 		/**
 		 * make style name from dash to camelCase
@@ -69,30 +34,6 @@
 			return name.replace(/-([a-z])/, function (match, letter) {
 				return letter.toUpperCase();
 			});
-		},
-
-
-		getStylesThatNeedApply: function () {
-			var range = this.editor.getSelection().getRanges()[0];
-			var editorDOMContainer = this.editor.editable().$;
-			var container = range.startContainer.$;
-			var stylesThatNeedApply = this.styleNamesThatNeedSet.slice(0);
-
-			if ((container === range.endContainer.$ || container === range.startContainer.$) && container !== editorDOMContainer) {
-				while (container !== editorDOMContainer && container !== range.document && stylesThatNeedApply.length) {
-					if (container.nodeType === 1) {
-						for (var i = 0; i < stylesThatNeedApply.length; i++) {
-							if (this.hasStyle(container, stylesThatNeedApply[i])) {
-								stylesThatNeedApply.splice(i--, 1);
-							}
-						}
-					}
-
-					container = container.parentNode;
-				}
-			}
-
-			return stylesThatNeedApply;
 		},
 
 		hasStyle: function (element, style) {
@@ -110,7 +51,12 @@
 		},
 
 		setDefaultStyles: function () {
-			var styles = this.getStylesThatNeedApply();
+			var editorDOMContainer = this.editor.editable().$;
+			var styles = this.styleNamesThatNeedSet;
+
+			if (editorDOMContainer.innerText.length > 1) {
+				return
+			}
 
 			if (styles.length) {
 				var style = new CKEDITOR.style({
@@ -201,12 +147,6 @@
 
 			editor.on('paste', function (event) {
 				event.data.dataValue = event.data.dataValue.replace(removePgbrReg, '');
-
-				if (config.singleParagraphEdit) {
-					setTimeout(function() {
-						useOnlyOneParagraph(editor, $(editor.editable().$).clone());
-					}, 20);
-				}
 			});
 
 			editor.on('change', function() {
@@ -217,15 +157,6 @@
 
 				debounced = setTimeout(function () {
 					var $editor = $(editor.editable().$);
-					var errors = validateParagraph($editor);
-
-					if(config.singleParagraphEdit) {
-						if (errors.length && !throttle) {
-							removeTableInList($editor);
-							clearEmptyNodes($editor);
-							wrapMultipleNodesIntoOne($editor);
-						}
-					}
 
 					setTdWidth($editor);
 				}, 100);
@@ -279,74 +210,6 @@
 		}
 	});
 })();
-
-function useOnlyOneParagraph(editor, $html) {
-	var children = $html.children();
-	var TAGS_FOR_SKIP_CONVERTING = ['OL', 'UL', 'LI', 'TABLE', 'TR', 'TD'];
-	var TAGS_REPLACER_REG = /(<\/?)(p|div)/g;
-	var skipAppend = false;
-
-	if (children.length < 1 && $(children[0]).find('p, div').size === 0) {
-		return;
-	}
-
-	for(var i = 0; i < children.length; i++) {
-		var child = children[i];
-
-		if (['ING', 'PGBR'].indexOf(child.tagName) === -1 && !child.innerText) {
-			child.parentNode.removeChild(child);
-		}
-	}
-
-	children = $html.children();
-
-	for(var i = 0; i < children.length; i++) {
-		if (TAGS_FOR_SKIP_CONVERTING.indexOf(children[i].tagName) !== -1) {
-			skipAppend = true;
-		}
-	}
-
-	if (!skipAppend) {
-		children[0].innerHTML = children[0].innerHTML.replace(TAGS_REPLACER_REG, '$1span');
-
-		for(var i = 1; i < children.length; i++) {
-			var child = children[i];
-			var newChild = document.createElement('span', child.attributes);
-
-			newChild.innerHTML = child.innerHTML.replace(TAGS_REPLACER_REG, '$1span');
-			children[0].appendChild(newChild);
-			child.parentNode.removeChild(child);
-		}
-	}
-
-	editor.setData($html.html());
-}
-
-function clearEmptyNodes($editor) {
-	$editor.children().each(function(index, item) {
-		if (!item.innerText) {
-			item.parentNode.removeChild(item);
-		}
-	});
-}
-
-function removeTableInList($editor) {
-	var $tableInList = $editor.find("ul > li table");
-	var $ul = $tableInList.parent("ul");
-	$tableInList.each(function(index, value) {
-		var $table = $(value);
-		$ul.after($table);
-		$table.parent("li").remove();
-	});
-
-	$("ul:empty").remove();
-}
-
-function wrapMultipleNodesIntoOne($editor) {
-	if ($editor.children.length > 1) {
-		$editor.wrapInner($("<div/>"));
-	}
-}
 
 function setTdWidth($editor) {
 	var ptPxCoef = 0.75;
