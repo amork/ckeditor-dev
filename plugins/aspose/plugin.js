@@ -1,6 +1,6 @@
 (function () {
 	var removePgbrReg = /<pgbr[^>][^>]*>(.*?)<\/pgbr>/g;
-	var STYLES_THAT_NEED_SET_AS_DEFAULT = ['font-size', 'font-weight', 'font-family', 'font-style'];
+	var STYLES_THAT_NEED_SET_AS_DEFAULT = ['font-size', 'font-weight', 'font-family', 'font-style', 'color'];
 	var throttle = false;
 	var debounced = null;
 
@@ -10,7 +10,16 @@
 		this.defaultStyles = defaultStyles || {};
 		this.editor = editor;
 
-		this.styleNamesThatNeedSet = Object.keys(this.defaultStyles)
+		this.styleNamesThatNeedSet = STYLES_THAT_NEED_SET_AS_DEFAULT.reduce(
+			function(acc, styleName) {
+				if (defaultStyles[styleName]) {
+					acc.push(styleName)
+				}
+
+				return acc
+			},
+			[]
+		);
 
 		this.styleNamesThatNeedSet.length && editor.on('key', function (event) {
 			if (event.data.domEvent.$.key.length === 1) {
@@ -66,30 +75,6 @@
 			});
 		},
 
-
-		getStylesThatNeedApply: function () {
-			var range = this.editor.getSelection().getRanges()[0];
-			var editorDOMContainer = this.editor.editable().$;
-			var container = range.startContainer.$;
-			var stylesThatNeedApply = this.styleNamesThatNeedSet.slice(0);
-
-			if ((container === range.endContainer.$ || container === range.startContainer.$) && container !== editorDOMContainer) {
-				while (container !== editorDOMContainer && container !== range.document && stylesThatNeedApply.length) {
-					if (container.nodeType === 1) {
-						for (var i = 0; i < stylesThatNeedApply.length; i++) {
-							if (this.hasStyle(container, stylesThatNeedApply[i])) {
-								stylesThatNeedApply.splice(i--, 1);
-							}
-						}
-					}
-
-					container = container.parentNode;
-				}
-			}
-
-			return stylesThatNeedApply;
-		},
-
 		hasStyle: function (element, style) {
 			return element.style[this.normalizeStyleName(style)];
 		},
@@ -105,7 +90,12 @@
 		},
 
 		setDefaultStyles: function () {
-			var styles = this.getStylesThatNeedApply();
+			var editorDOMContainer = this.editor.editable().$;
+			var styles = this.styleNamesThatNeedSet;
+
+			if (editorDOMContainer.innerText.length > 1) {
+				return
+			}
 
 			if (styles.length) {
 				var style = new CKEDITOR.style({
