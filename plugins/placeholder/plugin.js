@@ -231,7 +231,7 @@
 
 						// Return outerhtml of widget wrapper so it will be placed
 						// as replacement.
-						return widgetWrapper.getOuterHtml();
+						return widgetWrapper.getOuterHtml() + '<span class="remove-me">&nbsp;</span>';
 					});
 				}
 			});
