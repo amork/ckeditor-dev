@@ -304,7 +304,8 @@ function useOnlyOneParagraph(editor, $html) {
 		}
 	}
 
-	editor.setData($html.html());
+  editor.setData($html.html());
+  caretToEnd(editor);
 }
 
 function clearEmptyNodes($editor) {
@@ -341,4 +342,13 @@ function setTdWidth($editor) {
 			this.style.width = parseInt(window.getComputedStyle(this).width, 10) * ptPxCoef + 'pt';
 		}
 	})
+}
+
+function caretToEnd(editor) {
+  var range = editor.createRange()
+  if (range) {
+    range.moveToElementEditEnd(editor.editable())
+    range.select()
+    range.scrollIntoView()
+  }
 }
