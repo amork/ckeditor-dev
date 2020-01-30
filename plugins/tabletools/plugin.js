@@ -179,6 +179,9 @@
 			row = insertBefore ? startRow : endRow;
 
 		var nextRow = table.$.querySelectorAll('tr')[rowIndex + (insertBefore ? -1 : 0)];
+		if (rowIndex === 0 && insertBefore) {
+			nextRow = table.$.querySelectorAll('tr')[0];
+		}
 		var newRow = doc.createElement( 'tr' );
 
 		newRow.$.innerHTML = createRowHtml(nextRow.innerHTML);
