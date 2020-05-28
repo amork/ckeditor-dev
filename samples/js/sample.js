@@ -51,7 +51,8 @@ var initSample = ( function() {
           // 'CreateCpPlaceholder',
           'CreateAutoSequence'
         ]},
-        {name: 'smartfields', items: ['smartfields']},
+				{name: 'smartfields', items: ['smartfields']},
+				{name: 'imagetemplate', items: ['imagetemplate']},
 				{name: 'helpers', items: ['Undo', 'Redo']},
 				{name: 'tabletools', items: ['tabledelete', 'tableproperties', 'tablerowinsertbefore',
 					'tablerowinsertafter', 'tablerowdelete', 'tablecolumninsertbefore', 'tablecolumninsertafter',

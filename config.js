@@ -15,6 +15,7 @@ CKEDITOR.editorConfig = function( config ) {
 		'pagebreak,' +
 		'placeholder,' +
 		'base64image,' +
+		'imagetemplate,' +
 		'basicstyles,' +
 		'blockquote,' +
 		'cancelChanges,' +
