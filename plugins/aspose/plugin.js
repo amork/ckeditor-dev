@@ -28,41 +28,6 @@
 		})
 	}
 
-
-	function validateParagraph($editor) {
-		var POSSIBLE_ERRORS = [
-			'more than one element first level',
-			'have table inside',
-			'have more than one list',
-			'have more than one inserted paragraph'
-			// 'have list inside'
-		];
-		var errors = [];
-		var children = $editor.children();
-
-		if ($editor.children().length > 1) {
-			errors.push(POSSIBLE_ERRORS[0])
-		}
-
-		if ($editor.find('p p').length > 0) {
-			errors.push(POSSIBLE_ERRORS[4])
-		}
-
-		if ($editor.find('* table').length && $editor.text().length > $editor.find('table').text().length) {
-			errors.push(POSSIBLE_ERRORS[1])
-		}
-
-		if (['OL', 'UL'].indexOf(children[0] && children[0].tagName) !== -1 && children[0] && children[0].children.length > 1) {
-			errors.push(POSSIBLE_ERRORS[3])
-		}
-
-		// if ($editor.find('p ol, p ul').length) {
-		// 	errors.push(POSSIBLE_ERRORS[4])
-		// }
-
-		return errors;
-	}
-
 	defaultStyle.prototype = {
 		/**
 		 * make style name from dash to camelCase
@@ -202,16 +167,6 @@
 
 				debounced = setTimeout(function () {
 					var $editor = $(editor.editable().$);
-					var errors = validateParagraph($editor);
-
-					if(config.singleParagraphEdit) {
-						if (errors.length && !throttle) {
-							removeTableInList($editor);
-							clearEmptyNodes($editor);
-							wrapMultipleNodesIntoOne($editor);
-						}
-					}
-
 					setTdWidth($editor);
 				}, 100);
 				});
@@ -306,32 +261,6 @@ function useOnlyOneParagraph(editor, $html) {
 
   editor.setData($html.html());
   caretToEnd(editor);
-}
-
-function clearEmptyNodes($editor) {
-	$editor.children().each(function(index, item) {
-		if (!item.innerText) {
-			item.parentNode.removeChild(item);
-		}
-	});
-}
-
-function removeTableInList($editor) {
-	var $tableInList = $editor.find("ul > li table");
-	var $ul = $tableInList.parent("ul");
-	$tableInList.each(function(index, value) {
-		var $table = $(value);
-		$ul.after($table);
-		$table.parent("li").remove();
-	});
-
-	$("ul:empty").remove();
-}
-
-function wrapMultipleNodesIntoOne($editor) {
-	if ($editor.children.length > 1) {
-		$editor.wrapInner($("<div/>"));
-	}
 }
 
 function setTdWidth($editor) {
