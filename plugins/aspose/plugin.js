@@ -1,6 +1,6 @@
 (function () {
 	var removePgbrReg = /<pgbr[^>][^>]*>(.*?)<\/pgbr>/g;
-	var STYLES_THAT_NEED_SET_AS_DEFAULT = ['font-size', 'font-weight', 'font-family', 'font-style', 'color'];
+	// var STYLES_THAT_NEED_SET_AS_DEFAULT = ['font-size', 'font-weight', 'font-family', 'font-style', 'color'];
 	var throttle = false;
 	var debounced = null;
 
@@ -10,7 +10,7 @@
 		this.defaultStyles = defaultStyles || {};
 		this.editor = editor;
 
-		this.styleNamesThatNeedSet = STYLES_THAT_NEED_SET_AS_DEFAULT.reduce(
+/* 		this.styleNamesThatNeedSet = STYLES_THAT_NEED_SET_AS_DEFAULT.reduce(
 			function(acc, styleName) {
 				if (defaultStyles[styleName]) {
 					acc.push(styleName)
@@ -19,7 +19,8 @@
 				return acc
 			},
 			[]
-		);
+		); */
+		this.styleNamesThatNeedSet = Object.keys(this.defaultStyles)
 
 		this.styleNamesThatNeedSet.length && editor.on('key', function (event) {
 			if (event.data.domEvent.$.key.length === 1) {
