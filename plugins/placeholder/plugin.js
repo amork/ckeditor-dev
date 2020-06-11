@@ -194,6 +194,10 @@
 						var parsed = JSON.parse($1);
 						var classes = "";
 
+						if (parsed.label === 'image') {
+							return match;
+						}
+
 						if (parsed.counterparty) {
 							classes += " cke_placeholder_counterparty";
 						}
@@ -214,7 +218,7 @@
 							innerElement = new CKEDITOR.htmlParser.element(
 								"span",
 								{
-									class: "cke_placeholder" + classes
+									'class': "cke_placeholder" + classes
 								}
 							);
 

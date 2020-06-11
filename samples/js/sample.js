@@ -52,6 +52,7 @@ var initSample = ( function() {
           'CreateAutoSequence'
         ]},
         {name: 'smartfields', items: ['smartfields']},
+        {name: 'imagePlaceholder', items: ['imagePlaceholder']},
 				{name: 'helpers', items: ['Undo', 'Redo']},
 				{name: 'tabletools', items: ['tabledelete', 'tableproperties', 'tablerowinsertbefore',
 					'tablerowinsertafter', 'tablerowdelete', 'tablecolumninsertbefore', 'tablecolumninsertafter',

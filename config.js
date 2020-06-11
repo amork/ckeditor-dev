@@ -33,6 +33,7 @@ CKEDITOR.editorConfig = function( config ) {
 		'format,' +
 		'horizontalrule,' +
 		'htmlwriter,' +
+		'imagePlaceholder,' +
 		'indentblock,' +
 		'indentlist,' +
 		'indenttab,' +
@@ -47,6 +48,7 @@ CKEDITOR.editorConfig = function( config ) {
 		'pastetext,' +
 		'removeformat,' +
 		'showborders,' +
+    'smartfields,' +
 		'sourcearea,' +
 		'specialchar,' +
 		'stylescombo,' +
@@ -55,7 +57,6 @@ CKEDITOR.editorConfig = function( config ) {
 		'tabletools,' +
 		'tabletoolstoolbar,' +
     'toolbar,' +
-    'smartfields,' +
 		'undo';
 	config.languages = {
 		en : 1
@@ -68,7 +69,7 @@ CKEDITOR.editorConfig = function( config ) {
 	config.editor_indents = 100;
 
 	// '*(*);*{*}' allows any class and any inline style.
-	config.extraAllowedContent = '*[data-placeholder-id, data-style, data-id, list-item, table-parent-id, par-style, start, type, contenteditable, href, content-editable, checked]; *(*); *{*}; span(*); table[cellspacing, cellpadding]; tr; td; tbody; div;h1;h2;h3;h4;h5;h6; a;pgbr; input;checkbox;';
+	config.extraAllowedContent = '*[data-placeholder-id, props, data-style, data-id, list-item, table-parent-id, par-style, start, type, contenteditable, href, content-editable, checked]; *(*); *{*}; span(*); table[cellspacing, cellpadding]; tr; td; tbody; div;h1;h2;h3;h4;h5;h6; a;pgbr; input;checkbox;';
 
 	// Disable auto remove empty span
 	CKEDITOR.dtd.$removeEmpty.span = 0;
