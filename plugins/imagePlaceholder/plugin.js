@@ -1,14 +1,22 @@
 /*
- * ImagePlaceholder Plugin for CKEditor (http://github.com/nmmf/imagePlaceholder)
+ * Awesome ImagePlaceholder Plugin for CKEditor (http://github.com/nmmf/imagePlaceholder)
  */
 CKEDITOR.plugins.add("imagePlaceholder", {
 	lang: ["en"],
 	requires: "dialog",
 	icons: "imagePlaceholder",
+	imageData: {
+		label: 'image',
+		required: true,
+		param: {
+			mode: 'original',
+			width: '',
+			height: ''
+		}
+	},
   hidpi: true,
 	init: function(editor) {
-		var pluginName = "imagePlaceholderDialog";
-
+		var pluginName = "imagePlaceholder";
 		editor.ui.addButton("imagePlaceholder", {
 			label: editor.lang.common.image,
 			command: pluginName,
@@ -44,12 +52,18 @@ CKEDITOR.plugins.add("imagePlaceholder", {
 				evt.data.element.getName() === "img"
 			) {
 				evt.data.dialog = pluginName;
+
+				try {
+					var data = JSON.parse(evt.data.element.getAttribute('data-params'));
+					editor.plugins[pluginName].setAllData(data);
+				} catch (e) {
+					console.error(e)
+				}
 				editor.getSelection().selectElement(evt.data.element);
 			}
     });
 
 		if (editor.addMenuItem) {
-      // todo
 			editor.addMenuGroup("imagePlaceholderGroup");
 			editor.addMenuItem("imagePlaceholderItem", {
 				label: editor.lang.common.image,
@@ -58,48 +72,53 @@ CKEDITOR.plugins.add("imagePlaceholder", {
 				group: "imagePlaceholderGroup"
 			});
 		}
-  },
+	},
+	setAllData: function (data) {
+		this.imageData = data;
+	},
+	setData: function (key, value) {
+		this.imageData[key] = value;
+	},
+	getData: function (key) {
+		return key ? this.imageData[key] : this.imageData;
+	},
   onLoad: function () {
-    // Register styles for placeholder widget frame.
-    CKEDITOR.addCss('input[name="cke_image-placeholder_radio_radio"] {' +
-    '  position: relative;' +
-    '  top: 105px;' +
-    '  left: 47%;' +
-    '}' +
-    '.cke_dialog_ui_hbox_last > input[name="cke_image-placeholder_radio_radio"] + label,' +
-    '.cke_dialog_ui_hbox_first > input[name="cke_image-placeholder_radio_radio"] + label {' +
-    '  background: url(' + this.path + 'icons/size-original.png) center top no-repeat;' +
-    '  display: block;' +
-    '  width: 80%;' +
-    '  margin: 0 auto 16px auto;' +
-    '  padding: 70px 0 0 0;' +
-    '  text-align: center;' +
-    '  cursor: pointer;' +
-    '  user-select: none;' +
-    '}' +
-    '.cke_dialog_ui_hbox_last > input[name="cke_image-placeholder_radio_radio"] + label {' +
-    '  background: url(' + this.path + 'icons/size-contain.png) center top no-repeat;' +
-    '}' +
-    '.cke_dialog_ui_hbox_first > input[name="cke_image-placeholder_radio_radio"] + label:hover {' +
-    '  background: url(' + this.path + 'icons/size-original-hover.png) center top no-repeat;' +
-    '}' +
-    '.cke_dialog_ui_hbox_last > input[name="cke_image-placeholder_radio_radio"] + label:hover {' +
-    '  background: url(' + this.path + 'icons/size-contain-hover.png) center top no-repeat;' +
-    '}' +
-    '.image-placeholder {' +
-    '  text-indent: -9000px;' +
-    '  display: block;' +
-    '  width: 120px;' +
-    '  height: 120px;' +
-    '}' +
-    '.image-placeholder.mode_original {' +
-    '  background: #f0f1f2 url(' + this.path + 'icons/preview-original.png) center no-repeat;' +
-    '}' +
-    '.image-placeholder.mode_contain {' +
-    '  width: 100%;' +
-    '  min-height: 240px;' +
-    '  background: #f0f1f2 url(' + this.path + 'icons/preview-contain.png) center no-repeat;' +
-    '}');
+    var css = 'input[name="cke_image-placeholder_radio_radio"] { \
+      position: relative; \
+      top: 105px; \
+      left: 47%; \
+    } \
+    .cke_dialog_ui_hbox_last > input[name="cke_image-placeholder_radio_radio"] + label, \
+    .cke_dialog_ui_hbox_first > input[name="cke_image-placeholder_radio_radio"] + label { \
+      background: url(' + this.path + 'icons/size-original.png) center top no-repeat; \
+      display: block; \
+      width: 80%; \
+      margin: 0 auto 16px auto; \
+      padding: 70px 0 0 0; \
+      text-align: center; \
+      cursor: pointer; \
+      user-select: none; \
+    } \
+    .cke_dialog_ui_hbox_last > input[name="cke_image-placeholder_radio_radio"] + label { \
+      background: url(' + this.path + 'icons/size-contain.png) center top no-repeat; \
+    } \
+    .cke_dialog_ui_hbox_first > input[name="cke_image-placeholder_radio_radio"] + label:hover { \
+      background: url(' + this.path + 'icons/size-original-hover.png) center top no-repeat; \
+    } \
+    .cke_dialog_ui_hbox_last > input[name="cke_image-placeholder_radio_radio"] + label:hover { \
+      background: url(' + this.path + 'icons/size-contain-hover.png) center top no-repeat; \
+    } \
+    .image-placeholder { \
+    } \
+    .image-placeholder.mode_contain { \
+      background: #f0f1f2 url(' + this.path + 'icons/preview-contain.png) center no-repeat; \
+    } \
+    .image-placeholder.mode_original { \
+      width: 100%; \
+      min-height: 240px; \
+      background: #f0f1f2 url(' + this.path + 'icons/preview-original.png) center no-repeat; \
+    }'
+    CKEDITOR.addCss(css);
 	},
 	afterInit: function(editor) {
 		var placeholderReplaceRegex = /\[\[(\{.+?\})]]/g;
@@ -118,19 +137,25 @@ CKEDITOR.plugins.add("imagePlaceholder", {
 				) {
 					// Creating widget code.
 					var parsed = JSON.parse($1);
-					console.log("parsed = ", parsed);
+					parsed.param = parsed.param || {}
 					var classes = "";
 					if (parsed.required) {
 						classes += " cke_placeholder_required";
 					}
+					classes += " mode_" + (parsed.param.mode || '');
+					var attributes = {
+						'class': "image-placeholder" + classes,
+						'data-params': $1
+					}
 
-					classes += " mode_" + parsed.param.mode;
+					if (parsed.param.mode === 'contain') {
+						attributes.width = parsed.param.width || '120'
+						attributes.height = parsed.param.height || '120'
+					}
+
 					var element = new CKEDITOR.htmlParser.element(
 						"img",
-						{
-							'class': "image-placeholder" + classes,
-							'data-params': "[[" + parsed.label + "]]"
-						}
+						attributes
 					);
 
 					// Return outerhtml of widget wrapper so it will be placed
@@ -141,3 +166,4 @@ CKEDITOR.plugins.add("imagePlaceholder", {
 		});
 	}
 });
+

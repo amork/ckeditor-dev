@@ -1,13 +1,6 @@
-CKEDITOR.dialog.add('imagePlaceholderDialog', function(editor) {
-	var field = {
-		label: "image",
-		required: true,
-		param: {
-			mode: 'original',
-			width: '',
-			height: ''
-		}
-	};
+CKEDITOR.dialog.add('imagePlaceholder', function(editor) {
+	var field = editor.plugins.imagePlaceholder.getData() || {};
+	field.param = field.param || {};
 
 	var sourceElements = [
 		{
@@ -40,9 +33,6 @@ CKEDITOR.dialog.add('imagePlaceholderDialog', function(editor) {
 					'default': '',
 					width: '75px',
 					id: 'width',
-					setup: function() {
-
-					},
 					validate: function() {
 						field.param.width = this.getValue().replace(/\D+/, '');
 					}
@@ -77,10 +67,10 @@ CKEDITOR.dialog.add('imagePlaceholderDialog', function(editor) {
 				this.setValue( field.required );
 			},
 			onClick: function() {
-				field.required = this.getValue();
+				field.required = '"' + this.getValue() + '"';
 			},
 			commit: function() {
-				field.required = this.getValue();
+				field.required = '"' + this.getValue() + '"';
 			}
 		}
 	]
@@ -98,12 +88,40 @@ CKEDITOR.dialog.add('imagePlaceholderDialog', function(editor) {
 
 			editor.focus();
 			editor.fire('saveSnapshot');
+			var width = field.param && field.param.width ? ' width=' + field.param.width : ''
+			var height = field.param && field.param.height ? ' height=' + field.param.height : ''
 			var fragment = editor.getSelection().getRanges()[0].extractContents();
-			var container = CKEDITOR.dom.element.createFromHtml('<img class="image-placeholder mode_' + field.param.mode + '" ' +
-				' data-params="[[' + JSON.stringify(field).replace(/"/g, '&quot;') +']]"/>', editor.document);
+			var container = CKEDITOR.dom.element.createFromHtml('<img' + width + height + ' class="image-placeholder mode_' + field.param.mode + '" ' +
+				' data-params="' + JSON.stringify(field).replace(/"/g, '&quot;') +'"/>', editor.document);
 
 			fragment.appendTo(container);
 			editor.insertElement(container);
+		},
+		onHide: function() {
+			editor.plugins.imagePlaceholder.setAllData({});
+		},
+		onShow: function() {
+			field = editor.plugins.imagePlaceholder.getData();
+			field.param = field.param || {};
+
+			this.setValueOf('tab-source', 'width', field.param.width);
+			this.setValueOf('tab-source', 'height', field.param.height);
+			this.setValueOf('tab-source', 'cke_image-placeholder_radio', field.param.mode);
+			this.setValueOf('tab-source', 'required', field.required);
+		},
+		onLoad: function() {
+			thisDialog = this;
+
+			this.getContentElement('tab-source', 'width')
+				.getInputElement()
+				.on('keyup', function() {
+					editor.plugins.imagePlaceholder.setData('width', this.getValue())
+				});
+			this.getContentElement('tab-source', 'height')
+				.getInputElement()
+				.on('keyup', function() {
+					editor.plugins.imagePlaceholder.setData('height', this.getValue())
+				});
 		},
 		/* Dialog form */
 		contents: [
