@@ -91,7 +91,7 @@ CKEDITOR.dialog.add('imagePlaceholder', function(editor) {
 			var width = field.param && field.param.width ? ' width=' + field.param.width : ''
 			var height = field.param && field.param.height ? ' height=' + field.param.height : ''
 			var fragment = editor.getSelection().getRanges()[0].extractContents();
-			var container = CKEDITOR.dom.element.createFromHtml('<img' + width + height + ' class="image-placeholder mode_' + field.param.mode + '" ' +
+			var container = CKEDITOR.dom.element.createFromHtml('<img' + width + height + ' class="image-placeholder_cke mode_' + field.param.mode + '" ' +
 				' data-params="' + JSON.stringify(field).replace(/"/g, '&quot;') +'"/>', editor.document);
 
 			fragment.appendTo(container);

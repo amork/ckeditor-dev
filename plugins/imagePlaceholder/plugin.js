@@ -108,12 +108,12 @@ CKEDITOR.plugins.add("imagePlaceholder", {
     .cke_dialog_ui_hbox_last > input[name="cke_image-placeholder_radio_radio"] + label:hover { \
       background: url(' + this.path + 'icons/size-contain-hover.png) center top no-repeat; \
     } \
-    .image-placeholder { \
+    .image-placeholder_cke { \
     } \
-    .image-placeholder.mode_contain { \
+    .image-placeholder_cke.mode_contain { \
       background: #f0f1f2 url(' + this.path + 'icons/preview-contain.png) center no-repeat; \
     } \
-    .image-placeholder.mode_original { \
+    .image-placeholder_cke.mode_original { \
       width: 100%; \
       min-height: 240px; \
       background: #f0f1f2 url(' + this.path + 'icons/preview-original.png) center no-repeat; \
@@ -144,7 +144,7 @@ CKEDITOR.plugins.add("imagePlaceholder", {
 					}
 					classes += " mode_" + (parsed.param.mode || '');
 					var attributes = {
-						'class': "image-placeholder" + classes,
+						'class': "image-placeholder_cke" + classes,
 						'data-params': $1
 					}
 
