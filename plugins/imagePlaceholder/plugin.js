@@ -4,7 +4,7 @@
 CKEDITOR.plugins.add("imagePlaceholder", {
 	lang: ["en"],
 	requires: "dialog",
-	icons: "imagePlaceholder",
+	icons: "",
 	imageData: {
 		label: 'image',
 		required: true,
@@ -67,7 +67,6 @@ CKEDITOR.plugins.add("imagePlaceholder", {
 			editor.addMenuGroup("imagePlaceholderGroup");
 			editor.addMenuItem("imagePlaceholderItem", {
 				label: editor.lang.common.image,
-				icon: this.path + "icons/imagePlaceholder.png",
 				command: pluginName,
 				group: "imagePlaceholderGroup"
 			});
@@ -87,7 +86,11 @@ CKEDITOR.plugins.add("imagePlaceholder", {
       position: relative; \
       top: 105px; \
       left: 47%; \
-    } \
+		} \
+		.cke_dialog_ui_text.control-image-width input[disabled], \
+		.cke_dialog_ui_text.control-image-height input[disabled] { \
+			background-color: #e0e0e0; \
+		} \
     .cke_dialog_ui_hbox_last > input[name="cke_image-placeholder_radio_radio"] + label, \
     .cke_dialog_ui_hbox_first > input[name="cke_image-placeholder_radio_radio"] + label { \
       background: url(' + this.path + 'icons/size-original.png) center top no-repeat; \

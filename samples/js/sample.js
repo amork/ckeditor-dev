@@ -40,7 +40,7 @@ var initSample = ( function() {
 				{name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'RemoveFormat']},
 				{name: 'copyformatting', items: ['CopyFormatting']},
 				{name: 'color', items: ['TextColor', 'BGColor']},
-				{name: 'list', items: ['NumberedList', 'BulletedList']},
+				// {name: 'list', items: ['NumberedList', 'BulletedList']},
 				{name: 'indent', items : ['Indent', 'Outdent']},
 				{name: 'paragraph', items: ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock' ]},
 				{name: 'find', items: ['Find', 'Replace']},

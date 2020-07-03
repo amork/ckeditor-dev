@@ -11,8 +11,8 @@ CKEDITOR.dialog.add('imagePlaceholder', function(editor) {
 				id: 'cke_image-placeholder_radio',
 				'default': 'original',
 				items: [
-					[ 'Original', 'original' ],
-					[ 'Contain', 'contain' ]
+					[ 'Best for Illustration', 'original' ],
+					[ 'Best for Logotype', 'contain' ]
 				],
 				onClick: function() {
 					field.param.mode = this.getValue();
@@ -30,6 +30,7 @@ CKEDITOR.dialog.add('imagePlaceholder', function(editor) {
 				{
 					type: 'text',
 					label: 'Width',
+					className: 'control-image-width',
 					'default': '',
 					width: '75px',
 					id: 'width',
@@ -41,6 +42,7 @@ CKEDITOR.dialog.add('imagePlaceholder', function(editor) {
 					type: 'text',
 					label: 'Height',
 					width: '75px',
+					className: 'control-image-height',
 					id: 'height',
 					'default': '',
 					validate: function() {
@@ -67,10 +69,10 @@ CKEDITOR.dialog.add('imagePlaceholder', function(editor) {
 				this.setValue( field.required );
 			},
 			onClick: function() {
-				field.required = '"' + this.getValue() + '"';
+				field.required = this.getValue();
 			},
 			commit: function() {
-				field.required = '"' + this.getValue() + '"';
+				field.required = this.getValue();
 			}
 		}
 	]
@@ -110,7 +112,31 @@ CKEDITOR.dialog.add('imagePlaceholder', function(editor) {
 			this.setValueOf('tab-source', 'required', field.required);
 		},
 		onLoad: function() {
-			thisDialog = this;
+			var width = this.getContentElement('tab-source', 'width').getInputElement();
+			var height = this.getContentElement('tab-source', 'height').getInputElement();
+
+			this.getContentElement('tab-source', 'cke_image-placeholder_radio')
+				.getInputElement()
+				.on('change', function() {
+					if (field.param.mode === 'original') {
+						width.setAttribute('disabled', true)
+						height.setAttribute('disabled', true)
+						width.$.value = 'full';
+						height.$.value = 'full';
+						field.param.width = ''
+						field.param.height = ''
+					} else {
+						width.removeAttribute('disabled')
+						height.removeAttribute('disabled')
+
+						var dimension = '150';
+						width.$.value = dimension;
+						height.$.value = dimension;
+						field.param.width = dimension
+						field.param.height = dimension
+					}
+
+				})
 
 			this.getContentElement('tab-source', 'width')
 				.getInputElement()
