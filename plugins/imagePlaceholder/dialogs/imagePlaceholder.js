@@ -9,7 +9,7 @@ CKEDITOR.dialog.add('imagePlaceholder', function(editor) {
 			children: [{
 				type: 'radio',
 				id: 'cke_image-placeholder_radio',
-				'default': 'original',
+				'default': field.param.mode,
 				items: [
 					[ 'Best for Illustration', 'original' ],
 					[ 'Best for Logotype', 'contain' ]

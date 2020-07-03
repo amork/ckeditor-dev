@@ -9,7 +9,7 @@ CKEDITOR.plugins.add("imagePlaceholder", {
 		label: 'image',
 		required: true,
 		param: {
-			mode: 'original',
+			mode: 'contain',
 			width: '',
 			height: ''
 		}
