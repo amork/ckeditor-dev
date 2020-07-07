@@ -1,5 +1,5 @@
 /*
- * Awesome ImagePlaceholder Plugin for CKEditor (http://github.com/nmmf/imagePlaceholder)
+ * Awesome ImagePlaceholder Plugin for CKEditor (http://github.com/seyar)
  */
 CKEDITOR.plugins.add("imagePlaceholder", {
 	lang: ["en"],
@@ -9,12 +9,12 @@ CKEDITOR.plugins.add("imagePlaceholder", {
 		label: 'image',
 		required: true,
 		param: {
-			mode: 'contain',
-			width: '',
-			height: ''
+			align: 'float',
+			width: '120px',
+			height: '120px'
 		}
 	},
-  hidpi: true,
+  hidpi: false,
 	init: function(editor) {
 		var pluginName = "imagePlaceholder";
 		editor.ui.addButton("imagePlaceholder", {
@@ -93,7 +93,7 @@ CKEDITOR.plugins.add("imagePlaceholder", {
 		} \
     .cke_dialog_ui_hbox_last > input[name="cke_image-placeholder_radio_radio"] + label, \
     .cke_dialog_ui_hbox_first > input[name="cke_image-placeholder_radio_radio"] + label { \
-      background: url(' + this.path + 'icons/size-original.png) center top no-repeat; \
+      background: url(' + this.path + 'icons/size-justify.png) center top no-repeat; \
       display: block; \
       width: 80%; \
       margin: 0 auto 16px auto; \
@@ -103,28 +103,22 @@ CKEDITOR.plugins.add("imagePlaceholder", {
       user-select: none; \
     } \
     .cke_dialog_ui_hbox_last > input[name="cke_image-placeholder_radio_radio"] + label { \
-      background: url(' + this.path + 'icons/size-contain.png) center top no-repeat; \
+      background: url(' + this.path + 'icons/size-float.png) center top no-repeat; \
     } \
+    .cke_dialog_ui_hbox_first > input[name="cke_image-placeholder_radio_radio"]:checked + label, \
     .cke_dialog_ui_hbox_first > input[name="cke_image-placeholder_radio_radio"] + label:hover { \
-      background: url(' + this.path + 'icons/size-original-hover.png) center top no-repeat; \
+      background: url(' + this.path + 'icons/size-justify.png) center -242px no-repeat; \
     } \
+    .cke_dialog_ui_hbox_last > input[name="cke_image-placeholder_radio_radio"]:checked + label, \
     .cke_dialog_ui_hbox_last > input[name="cke_image-placeholder_radio_radio"] + label:hover { \
-      background: url(' + this.path + 'icons/size-contain-hover.png) center top no-repeat; \
-    } \
-    .image-placeholder_cke { \
-    } \
-    .image-placeholder_cke.mode_contain { \
-      background: #f0f1f2 url(' + this.path + 'icons/preview-contain.png) center no-repeat; \
-    } \
-    .image-placeholder_cke.mode_original { \
-      width: 100%; \
-      min-height: 240px; \
-      background: #f0f1f2 url(' + this.path + 'icons/preview-original.png) center no-repeat; \
-    }'
+      background: url(' + this.path + 'icons/size-float.png) center -242px no-repeat; \
+    }';
+
     CKEDITOR.addCss(css);
 	},
 	afterInit: function(editor) {
 		var placeholderReplaceRegex = /\[\[(\{.+?\})]]/g;
+		var path = this.path;
 
 		editor.dataProcessor.dataFilter.addRules({
 			text: function(text, node) {
@@ -140,30 +134,26 @@ CKEDITOR.plugins.add("imagePlaceholder", {
 				) {
 					// Creating widget code.
 					var parsed = JSON.parse($1);
-					parsed.param = parsed.param || {}
+
+					parsed.param = parsed.param || {};
 					var classes = "";
 					if (parsed.required) {
 						classes += " cke_placeholder_required";
 					}
-					classes += " mode_" + (parsed.param.mode || '');
-					var attributes = {
-						'class': "image-placeholder_cke" + classes,
-						'data-params': $1
-					}
-
-					if (parsed.param.mode === 'contain') {
-						attributes.width = parsed.param.width || '120'
-						attributes.height = parsed.param.height || '120'
-					}
+					classes += " align_" + (parsed.param.align || '');
 
 					var element = new CKEDITOR.htmlParser.element(
 						"img",
-						attributes
+						{
+							'class': "image-placeholder_cke" + classes,
+							'data-params': $1,
+							width: parsed.param.width || '120',
+							height: parsed.param.height !== '100%' ? parsed.param.height : '',
+							src: parsed.value || path + 'icons/preview-' + (parsed.param.width === '100%' ? 'justify' : 'float') + '.png'
+						}
 					);
 
-					// Return outerhtml of widget wrapper so it will be placed
-					// as replacement.
-					return element.getOuterHtml() + '<span class="remove-me">&nbsp;</span>';
+					return element.getOuterHtml() + (parsed.required ? '<span class="img_placeholder_required">*</span>' : '');
 				});
 			}
 		});

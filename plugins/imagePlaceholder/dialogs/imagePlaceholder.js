@@ -9,13 +9,12 @@ CKEDITOR.dialog.add('imagePlaceholder', function(editor) {
 			children: [{
 				type: 'radio',
 				id: 'cke_image-placeholder_radio',
-				'default': field.param.mode,
 				items: [
-					[ 'Best for Illustration', 'original' ],
-					[ 'Best for Logotype', 'contain' ]
+					[ 'Best for Illustration', 'justify' ],
+					[ 'Best for Logotype', 'float' ]
 				],
 				onClick: function() {
-					field.param.mode = this.getValue();
+					field.param.align = this.getValue();
 				}
 			}]
 		},
@@ -35,7 +34,7 @@ CKEDITOR.dialog.add('imagePlaceholder', function(editor) {
 					width: '75px',
 					id: 'width',
 					validate: function() {
-						field.param.width = this.getValue().replace(/\D+/, '');
+						field.param.width = this.getValue().trim()/* .replace(/\D+/, '') */;
 					}
 				},
 				{
@@ -46,7 +45,7 @@ CKEDITOR.dialog.add('imagePlaceholder', function(editor) {
 					id: 'height',
 					'default': '',
 					validate: function() {
-						field.param.height = this.getValue().replace(/\D+/, '');
+						field.param.height = this.getValue().trim()/* .replace(/\D+/, '') */;
 					}
 				},
 				{
@@ -83,21 +82,22 @@ CKEDITOR.dialog.add('imagePlaceholder', function(editor) {
 		minWidth: 450,
 		minHeight: 180,
 		onOk: function() {
-			if (field.param.mode === 'contain' && !field.param.width && !field.param.height) {
-				alert('Please, specify width or height on contain mode');
+			if (field.param.align === 'float' && !field.param.width && !field.param.height) {
+				alert('Please, specify width or height on logotype');
 				return false;
 			}
-
 			editor.focus();
 			editor.fire('saveSnapshot');
-			var width = field.param && field.param.width ? ' width=' + field.param.width : ''
-			var height = field.param && field.param.height ? ' height=' + field.param.height : ''
+			var width = field.param.width ? ' width=' + field.param.width : ''
+			var height = field.param.height !== '100%' ? ' height=' + field.param.height : ''
+			var path = field.value || editor.plugins.imagePlaceholder.path;
+			var src = [' src="', path, 'icons/preview-', (field.param.width === '100%' ? 'justify' : 'float'), '.png', '"'].join('');
 			var fragment = editor.getSelection().getRanges()[0].extractContents();
-			var container = CKEDITOR.dom.element.createFromHtml('<img' + width + height + ' class="image-placeholder_cke mode_' + field.param.mode + '" ' +
+			var floater = CKEDITOR.dom.element.createFromHtml('<img' + src + width + height + ' class="image-placeholder_cke align_' + field.param.align + '" ' +
 				' data-params="' + JSON.stringify(field).replace(/"/g, '&quot;') +'"/>', editor.document);
 
-			fragment.appendTo(container);
-			editor.insertElement(container);
+			fragment.appendTo(floater);
+			editor.insertElement(floater);
 		},
 		onHide: function() {
 			editor.plugins.imagePlaceholder.setAllData({});
@@ -108,8 +108,12 @@ CKEDITOR.dialog.add('imagePlaceholder', function(editor) {
 
 			this.setValueOf('tab-source', 'width', field.param.width);
 			this.setValueOf('tab-source', 'height', field.param.height);
-			this.setValueOf('tab-source', 'cke_image-placeholder_radio', field.param.mode);
+			this.setValueOf('tab-source', 'cke_image-placeholder_radio', field.param.width === '100%' ? 'justify' : 'float');
 			this.setValueOf('tab-source', 'required', field.required);
+
+			var width = this.getContentElement('tab-source', 'width').getInputElement();
+			var height = this.getContentElement('tab-source', 'height').getInputElement();
+			disableControls(field, width, height);
 		},
 		onLoad: function() {
 			var width = this.getContentElement('tab-source', 'width').getInputElement();
@@ -118,24 +122,7 @@ CKEDITOR.dialog.add('imagePlaceholder', function(editor) {
 			this.getContentElement('tab-source', 'cke_image-placeholder_radio')
 				.getInputElement()
 				.on('change', function() {
-					if (field.param.mode === 'original') {
-						width.setAttribute('disabled', true)
-						height.setAttribute('disabled', true)
-						width.$.value = 'full';
-						height.$.value = 'full';
-						field.param.width = ''
-						field.param.height = ''
-					} else {
-						width.removeAttribute('disabled')
-						height.removeAttribute('disabled')
-
-						var dimension = '150';
-						width.$.value = dimension;
-						height.$.value = dimension;
-						field.param.width = dimension
-						field.param.height = dimension
-					}
-
+					disableControls(field, width, height);
 				})
 
 			this.getContentElement('tab-source', 'width')
@@ -159,3 +146,25 @@ CKEDITOR.dialog.add('imagePlaceholder', function(editor) {
 		]
 	}
 });
+
+function disableControls(field, width, height) {
+	if (field.param.align === 'justify') {
+		width.setAttribute('disabled', true);
+		width.$.value = '100%';
+		field.param.width = '100%';
+		height.setAttribute('disabled', true);
+		height.$.value = '100%';
+		field.param.height = '100%';
+	}
+	else {
+		var dimension = '120px';
+
+		width.removeAttribute('disabled');
+		width.$.value = dimension;
+		field.param.width = dimension;
+		height.removeAttribute('disabled');
+		height.$.value = dimension;
+		field.param.height = dimension;
+	}
+}
+
