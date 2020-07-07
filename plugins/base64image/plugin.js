@@ -10,17 +10,17 @@ CKEDITOR.plugins.add("base64image", {
 	hidpi	:	true,
     init	: 	function(editor){
 					var pluginName = 'base64imageDialog';
-					
+
 					editor.ui.addButton("base64image", {
 						label: editor.lang.common.image,
 						command: pluginName,
 						toolbar: "insert"
 					});
 					CKEDITOR.dialog.add(pluginName, this.path+"dialogs/base64image.js");
-					
+
 					var allowed = 'img[alt,!src]{border-style,border-width,float,height,margin,margin-bottom,margin-left,margin-right,margin-top,width}',
 						required = 'img[alt,src]';
-					
+
 					editor.addCommand( pluginName, new CKEDITOR.dialogCommand( pluginName, {
 						allowedContent: allowed,
 						requiredContent: required,
@@ -30,7 +30,7 @@ CKEDITOR.plugins.add("base64image", {
 						]
 					} ) );
 					editor.on("doubleclick", function(evt){
-						if(evt.data.element && !evt.data.element.isReadOnly() && evt.data.element.getName() === "img") {
+						if(evt.data.element && !evt.data.element.isReadOnly() && evt.data.element.getName() === "img" && evt.data.element.getAttribute('class').indexOf('image-placeholder_cke') === -1) {
 							evt.data.dialog = pluginName;
 							editor.getSelection().selectElement(evt.data.element);
 						}

@@ -49,7 +49,8 @@ CKEDITOR.plugins.add("imagePlaceholder", {
 			if (
 				evt.data.element &&
 				!evt.data.element.isReadOnly() &&
-				evt.data.element.getName() === "img"
+				evt.data.element.getName() === "img" &&
+				evt.data.element.getAttribute('class').indexOf('image-placeholder_cke') !== -1
 			) {
 				evt.data.dialog = pluginName;
 
