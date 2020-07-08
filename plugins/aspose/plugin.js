@@ -149,15 +149,15 @@
 				}
 			});
 
-			editor.on('paste', function (event) {
-				event.data.dataValue = event.data.dataValue.replace(removePgbrReg, '');
+			// editor.on('paste', function (event) {
+			// 	event.data.dataValue = event.data.dataValue.replace(removePgbrReg, '');
 
-				if (config.singleParagraphEdit) {
-					setTimeout(function() {
-						useOnlyOneParagraph(editor, $(editor.editable().$).clone());
-					}, 20);
-				}
-			});
+			// 	if (config.singleParagraphEdit) {
+			// 		setTimeout(function() {
+			// 			useOnlyOneParagraph(editor, $(editor.editable().$).clone());
+			// 		}, 20);
+			// 	}
+			// });
 
 			editor.on('change', function() {
 				if (debounced) {
