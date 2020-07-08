@@ -184,10 +184,20 @@
 		}
 		var newRow = doc.createElement( 'tr' );
 
-		newRow.$.innerHTML = createRowHtml(nextRow.innerHTML);
-		insertBefore ?
-			newRow.insertBefore( row ) :
-			newRow.insertAfter( row );
+    newRow.$.innerHTML = createRowHtml(nextRow.innerHTML);
+    
+    if(insertBefore){
+      newRow.insertBefore( row )
+      return;
+    }
+
+    var prevRowStyle = row.$.cells[0].style;
+    var borderWidth = prevRowStyle.borderTopWidth || prevRowStyle.borderBottomWidth || prevRowStyle.borderWidth;
+    Array.prototype.forEach.call(row.$.cells, function(el) {
+      el.style.borderBottomWidth = borderWidth
+    })
+
+		newRow.insertAfter( row );
 	}
 
 	function deleteRows( selectionOrRow ) {
