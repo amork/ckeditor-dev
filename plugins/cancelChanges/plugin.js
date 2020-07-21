@@ -60,11 +60,38 @@ CKEDITOR.plugins.add('cancelChanges', {
                 clearTimeout(_this.timerShow);
                 _this.timerHide = setTimeout(function() {_this.hideTooltip()}, _this.hideDelay);
             })
-            .on('click', function() {
+            .on('mousedown', function() {
                 if($tgt.prop('tagName') === 'DEL') {
-                    $tgt.replaceWith(function() {
+                    var selObj = window.getSelection();
+                    var selectedText = selObj.toString();
+                    var innerText = $tgt.text();
+
+                    if (selectedText && selectedText.length < innerText.length) {
+                      var startIndex = innerText.indexOf(selectedText)
+
+                      $tgt.replaceWith(function() {
+                        var parts = []
+                        if (startIndex === 0) { // at start
+                          parts = [selectedText, '<del>', innerText.slice(selectedText.length), '</del>'];
+
+                        } else if (startIndex + selectedText.length < innerText.length - 1) { // middle
+                          parts = ['<del>', innerText.slice(0, startIndex), '</del>', selectedText, '<del>', innerText.slice(startIndex + selectedText.length), '</del>'];
+
+                        } else { // at end
+                          parts = ['<del>', innerText.slice(0, startIndex), '</del>', selectedText];
+                        }
+
+                        return parts.join('');
+                      });
+
+                      $tgt.replaceWith(function() {
                         return $(this).html();
-                    });
+                      });
+                    } else {
+                      $tgt.replaceWith(function() {
+                        return $(this).html();
+                      });
+                    }
                 } else {
                     $tgt.remove();
                 }
