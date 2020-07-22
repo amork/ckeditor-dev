@@ -65,10 +65,21 @@ CKEDITOR.plugins.add('cancelChanges', {
                 var selectedText = selObj.toString().trim();
                 if($tgt.prop('tagName') === 'DEL') {
                     var innerText = $tgt.text();
+                    var startIndex = innerText.indexOf(selectedText)
 
-                    if (selectedText && selectedText.length < innerText.length) {
-                      var startIndex = innerText.indexOf(selectedText)
+                    // Find start text in selection relative to our tag
+                    if (startIndex === -1) {
+                        var selectedLength = selectedText.length
+                        for (var i = 0; i <= selectedLength; i++) {
+                            startIndex = innerText.indexOf(selectedText.slice(i))
+                            if (startIndex !== -1) {
+                                selectedText = selectedText.slice(i)
+                                break;
+                            }
+                        }
+                    }
 
+                    if (selectedText && selectedText.length < innerText.length && startIndex !== -1) {
                       $tgt.replaceWith(function() {
                         var parts = []
                         if (startIndex === 0) { // at start
@@ -79,7 +90,6 @@ CKEDITOR.plugins.add('cancelChanges', {
                             ];
 
                         } else if (startIndex + selectedText.length < innerText.length - 1) { // middle
-                            console.log("innerText[startIndex] = ", innerText[startIndex]);
                           parts = [
                                 '<del>', innerText.slice(0, startIndex).trim(), '</del>',
                                 innerText[startIndex - 1] === ' ' ? ' ' : '',
