@@ -72,13 +72,28 @@ CKEDITOR.plugins.add('cancelChanges', {
                       $tgt.replaceWith(function() {
                         var parts = []
                         if (startIndex === 0) { // at start
-                          parts = [selectedText, '<del>', innerText.slice(selectedText.length), '</del>'];
+                          parts = [
+                              selectedText,
+                              innerText[selectedText.length] === ' ' ? ' ' : '',
+                              '<del>', innerText.slice(selectedText.length).trim(), '</del>'
+                            ];
 
                         } else if (startIndex + selectedText.length < innerText.length - 1) { // middle
-                          parts = ['<del>', innerText.slice(0, startIndex), '</del>', selectedText, '<del>', innerText.slice(startIndex + selectedText.length), '</del>'];
+                            console.log("innerText[startIndex] = ", innerText[startIndex]);
+                          parts = [
+                                '<del>', innerText.slice(0, startIndex).trim(), '</del>',
+                                innerText[startIndex - 1] === ' ' ? ' ' : '',
+                                selectedText,
+                                innerText[startIndex + selectedText.length] === ' ' ? ' ' : '',
+                                '<del>', innerText.slice(startIndex + selectedText.length).trim(), '</del>'
+                            ];
 
                         } else { // at end
-                          parts = ['<del>', innerText.slice(0, startIndex), '</del>', selectedText];
+                          parts = [
+                              '<del>', innerText.slice(0, startIndex).trim(), '</del>',
+                              innerText[startIndex - 1] === ' ' ? ' ' : '',
+                              selectedText
+                            ];
                         }
 
                         return parts.join('');
