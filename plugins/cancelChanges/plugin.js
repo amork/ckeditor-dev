@@ -61,9 +61,9 @@ CKEDITOR.plugins.add('cancelChanges', {
                 _this.timerHide = setTimeout(function() {_this.hideTooltip()}, _this.hideDelay);
             })
             .on('mousedown', function() {
+                var selObj = window.getSelection();
+                var selectedText = selObj.toString().trim();
                 if($tgt.prop('tagName') === 'DEL') {
-                    var selObj = window.getSelection();
-                    var selectedText = selObj.toString();
                     var innerText = $tgt.text();
 
                     if (selectedText && selectedText.length < innerText.length) {
