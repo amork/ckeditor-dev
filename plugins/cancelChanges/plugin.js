@@ -60,11 +60,63 @@ CKEDITOR.plugins.add('cancelChanges', {
                 clearTimeout(_this.timerShow);
                 _this.timerHide = setTimeout(function() {_this.hideTooltip()}, _this.hideDelay);
             })
-            .on('click', function() {
+            .on('mousedown', function() {
+                var selObj = window.getSelection();
+                var selectedText = selObj.toString().trim();
                 if($tgt.prop('tagName') === 'DEL') {
-                    $tgt.replaceWith(function() {
+                    var innerText = $tgt.text();
+                    var startIndex = innerText.indexOf(selectedText)
+
+                    // Find start text in selection relative to our tag
+                    if (startIndex === -1) {
+                        var selectedLength = selectedText.length
+                        for (var i = 0; i <= selectedLength; i++) {
+                            startIndex = innerText.indexOf(selectedText.slice(i))
+                            if (startIndex !== -1) {
+                                selectedText = selectedText.slice(i)
+                                break;
+                            }
+                        }
+                    }
+
+                    if (selectedText && selectedText.length < innerText.length && startIndex !== -1) {
+                      $tgt.replaceWith(function() {
+                        var parts = []
+                        if (startIndex === 0) { // at start
+                          parts = [
+                              selectedText,
+                              innerText[selectedText.length] === ' ' ? ' ' : '',
+                              '<del>', innerText.slice(selectedText.length).trim(), '</del>'
+                            ];
+
+                        } else if (startIndex + selectedText.length < innerText.length - 1) { // middle
+                          parts = [
+                                '<del>', innerText.slice(0, startIndex).trim(), '</del>',
+                                innerText[startIndex - 1] === ' ' ? ' ' : '',
+                                selectedText,
+                                innerText[startIndex + selectedText.length] === ' ' ? ' ' : '',
+                                '<del>', innerText.slice(startIndex + selectedText.length).trim(), '</del>'
+                            ];
+
+                        } else { // at end
+                          parts = [
+                              '<del>', innerText.slice(0, startIndex).trim(), '</del>',
+                              innerText[startIndex - 1] === ' ' ? ' ' : '',
+                              selectedText
+                            ];
+                        }
+
+                        return parts.join('');
+                      });
+
+                      $tgt.replaceWith(function() {
                         return $(this).html();
-                    });
+                      });
+                    } else {
+                      $tgt.replaceWith(function() {
+                        return $(this).html();
+                      });
+                    }
                 } else {
                     $tgt.remove();
                 }
