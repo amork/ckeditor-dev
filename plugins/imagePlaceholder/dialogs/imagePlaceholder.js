@@ -83,18 +83,25 @@ CKEDITOR.dialog.add('imagePlaceholder', function(editor) {
 		minHeight: 180,
 		onOk: function() {
 			if (field.param.align === 'float' && !field.param.width && !field.param.height) {
-				alert('Please, specify width or height on logotype');
+				window.alert('Please, specify width or height on logotype');
 				return false;
 			}
 			editor.focus();
 			editor.fire('saveSnapshot');
-			var width = field.param.width ? ' width=' + field.param.width : ''
-			var height = field.param.height !== '100%' ? ' height=' + field.param.height : ''
+			var width = field.param.width ? 'width=' + field.param.width : '';
+			var height = field.param.height !== '100%' ? 'height=' + field.param.height : '';
 			var path = field.value || editor.plugins.imagePlaceholder.path;
-			var src = [' src="', path, 'icons/preview-', (field.param.width === '100%' ? 'justify' : 'float'), '.png', '"'].join('');
+			var src = ['src="', path, 'icons/preview-', (field.param.width === '100%' ? 'justify' : 'float'), '.png', '"'].join('');
+			var className = 'image-placeholder_cke align_' + (field.param.align || '') + (field.required ? ' cke_placeholder_required' : '');
 			var fragment = editor.getSelection().getRanges()[0].extractContents();
-			var floater = CKEDITOR.dom.element.createFromHtml('<img' + src + width + height + ' class="image-placeholder_cke align_' + field.param.align + '" ' +
-				' data-params="' + JSON.stringify(field).replace(/"/g, '&quot;') +'"/>', editor.document);
+			var floater = CKEDITOR.dom.element.createFromHtml([
+				'<img',
+				src,
+				width,
+				height,
+				'class="'+ className + '"',
+				'data-params="' + JSON.stringify(field).replace(/"/g, '&quot;') + '"/>'
+			].join(' '), editor.document);
 
 			fragment.appendTo(floater);
 			editor.insertElement(floater);
@@ -123,7 +130,7 @@ CKEDITOR.dialog.add('imagePlaceholder', function(editor) {
 				.getInputElement()
 				.on('change', function() {
 					disableControls(field, width, height);
-				})
+				});
 
 			this.getContentElement('tab-source', 'width')
 				.getInputElement()

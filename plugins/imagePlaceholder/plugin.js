@@ -154,7 +154,7 @@ CKEDITOR.plugins.add("imagePlaceholder", {
 						}
 					);
 
-					return element.getOuterHtml() + (parsed.required ? '<span class="img_placeholder_required">*</span>' : '');
+					return element.getOuterHtml();
 				});
 			}
 		});
