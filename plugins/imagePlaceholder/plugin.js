@@ -80,7 +80,7 @@ CKEDITOR.plugins.add("imagePlaceholder", {
 		this.imageData[key] = value;
 	},
 	getData: function (key) {
-		return key ? this.imageData[key] : jQuery.extend(true, {}, this.imageData);
+		return key ? this.imageData[key] : window.jQuery.extend(true, {}, this.imageData);
 	},
   onLoad: function () {
     var css = 'input[name="cke_image-placeholder_radio_radio"] { \

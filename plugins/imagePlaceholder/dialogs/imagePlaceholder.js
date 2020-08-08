@@ -33,7 +33,7 @@ CKEDITOR.dialog.add('imagePlaceholder', function(editor) {
 					width: '75px',
 					id: 'width',
 					validate: function() {
-						field.param.width = this.getValue().trim()/* .replace(/\D+/, '') */;
+						field.param.width = parseInt(this.getValue(), 10) + 'px';
 					}
 				},
 				{
@@ -44,7 +44,7 @@ CKEDITOR.dialog.add('imagePlaceholder', function(editor) {
 					id: 'height',
 					'default': '',
 					validate: function() {
-						field.param.height = this.getValue().trim()/* .replace(/\D+/, '') */;
+						field.param.height = parseInt(this.getValue(), 10) + 'px';
 					}
 				},
 				{
@@ -134,14 +134,14 @@ CKEDITOR.dialog.add('imagePlaceholder', function(editor) {
 			this.getContentElement('tab-source', 'width')
 				.getInputElement()
 				.on('keyup', function() {
-					var value = this.getValue();
-					editor.plugins.imagePlaceholder.setData('width', value);
+					var value = parseInt(this.getValue(), 10);
+					editor.plugins.imagePlaceholder.setData('width', value + 'px');
 				});
 			this.getContentElement('tab-source', 'height')
 				.getInputElement()
 				.on('keyup', function() {
-					var value = this.getValue();
-					editor.plugins.imagePlaceholder.setData('height', value);
+					var value = parseInt(this.getValue(), 10);
+					editor.plugins.imagePlaceholder.setData('height', value + 'px');
 				});
 		},
 		/* Dialog form */
