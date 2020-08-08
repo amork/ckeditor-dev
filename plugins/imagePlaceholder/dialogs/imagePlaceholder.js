@@ -1,6 +1,5 @@
 CKEDITOR.dialog.add('imagePlaceholder', function(editor) {
-	var field = editor.plugins.imagePlaceholder.getData() || {};
-	field.param = field.param || {};
+	var field = {param: {}};
 
 	var sourceElements = [
 		{
@@ -74,7 +73,7 @@ CKEDITOR.dialog.add('imagePlaceholder', function(editor) {
 				field.required = this.getValue();
 			}
 		}
-	]
+	];
 
 	/* Dialog */
 	return {
@@ -135,12 +134,14 @@ CKEDITOR.dialog.add('imagePlaceholder', function(editor) {
 			this.getContentElement('tab-source', 'width')
 				.getInputElement()
 				.on('keyup', function() {
-					editor.plugins.imagePlaceholder.setData('width', this.getValue())
+					var value = this.getValue();
+					editor.plugins.imagePlaceholder.setData('width', value);
 				});
 			this.getContentElement('tab-source', 'height')
 				.getInputElement()
 				.on('keyup', function() {
-					editor.plugins.imagePlaceholder.setData('height', this.getValue())
+					var value = this.getValue();
+					editor.plugins.imagePlaceholder.setData('height', value);
 				});
 		},
 		/* Dialog form */
@@ -151,27 +152,27 @@ CKEDITOR.dialog.add('imagePlaceholder', function(editor) {
 				elements: sourceElements
 			}
 		]
-	}
+	};
 });
 
-function disableControls(field, width, height) {
+function disableControls(field, widthControl, heightControl) {
 	if (field.param.align === 'justify') {
-		width.setAttribute('disabled', true);
-		width.$.value = '100%';
+		widthControl.setAttribute('disabled', true);
+		widthControl.$.value = '100%';
 		field.param.width = '100%';
-		height.setAttribute('disabled', true);
-		height.$.value = '100%';
+		heightControl.setAttribute('disabled', true);
+		heightControl.$.value = '100%';
 		field.param.height = '100%';
-	}
-	else {
-		var dimension = '120px';
+	} else {
+		var defaultDimension = '120px';
+		widthControl.removeAttribute('disabled');
+		heightControl.removeAttribute('disabled');
 
-		width.removeAttribute('disabled');
-		width.$.value = dimension;
-		field.param.width = dimension;
-		height.removeAttribute('disabled');
-		height.$.value = dimension;
-		field.param.height = dimension;
+
+		widthControl.$.value = field.param.width || defaultDimension;
+		heightControl.$.value = field.param.height || defaultDimension;
+		field.param.width = field.param.width || defaultDimension;
+		field.param.height = field.param.height || defaultDimension;
 	}
 }
 

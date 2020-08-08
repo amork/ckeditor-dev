@@ -58,7 +58,7 @@ CKEDITOR.plugins.add("imagePlaceholder", {
 					var data = JSON.parse(evt.data.element.getAttribute('data-params'));
 					editor.plugins[pluginName].setAllData(data);
 				} catch (e) {
-					console.error(e)
+					window.console ? window.console.error(e) : '';
 				}
 				editor.getSelection().selectElement(evt.data.element);
 			}
@@ -80,7 +80,7 @@ CKEDITOR.plugins.add("imagePlaceholder", {
 		this.imageData[key] = value;
 	},
 	getData: function (key) {
-		return key ? this.imageData[key] : this.imageData;
+		return key ? this.imageData[key] : jQuery.extend(true, {}, this.imageData);
 	},
   onLoad: function () {
     var css = 'input[name="cke_image-placeholder_radio_radio"] { \
@@ -148,7 +148,7 @@ CKEDITOR.plugins.add("imagePlaceholder", {
 						{
 							'class': "image-placeholder_cke" + classes,
 							'data-params': $1,
-							width: parsed.param.width || '120',
+							width: parsed.param.width || '120px',
 							height: parsed.param.height !== '100%' ? parsed.param.height : '',
 							src: parsed.value || path + 'icons/preview-' + (parsed.param.width === '100%' ? 'justify' : 'float') + '.png'
 						}
