@@ -1,5 +1,5 @@
 CKEDITOR.dialog.add('imagePlaceholder', function(editor) {
-	var field = {param: {}};
+	var field = editor.plugins.imagePlaceholder.getData();
 
 	var sourceElements = [
 		{
@@ -33,7 +33,7 @@ CKEDITOR.dialog.add('imagePlaceholder', function(editor) {
 					width: '75px',
 					id: 'width',
 					validate: function() {
-						field.param.width = parseInt(this.getValue(), 10) + 'px';
+						field.param.width = parseInt(this.getValue(), 10) + (field.param.align === 'float' ? 'px' : '%');
 					}
 				},
 				{
@@ -44,7 +44,7 @@ CKEDITOR.dialog.add('imagePlaceholder', function(editor) {
 					id: 'height',
 					'default': '',
 					validate: function() {
-						field.param.height = parseInt(this.getValue(), 10) + 'px';
+						field.param.height = parseInt(this.getValue(), 10) + (field.param.align === 'float' ? 'px' : '%');
 					}
 				},
 				{
@@ -106,7 +106,7 @@ CKEDITOR.dialog.add('imagePlaceholder', function(editor) {
 			editor.insertElement(floater);
 		},
 		onHide: function() {
-			editor.plugins.imagePlaceholder.setAllData({});
+			editor.plugins.imagePlaceholder.setAllData(editor.plugins.imagePlaceholder.defaultImageData);
 		},
 		onShow: function() {
 			field = editor.plugins.imagePlaceholder.getData();
@@ -169,10 +169,11 @@ function disableControls(field, widthControl, heightControl) {
 		heightControl.removeAttribute('disabled');
 
 
-		widthControl.$.value = field.param.width || defaultDimension;
-		heightControl.$.value = field.param.height || defaultDimension;
-		field.param.width = field.param.width || defaultDimension;
-		field.param.height = field.param.height || defaultDimension;
+		widthControl.$.value = field.param.width !== '100%' ? field.param.width : defaultDimension;
+		field.param.width = field.param.width !== '100%' ? field.param.width : defaultDimension;
+
+		heightControl.$.value = field.param.height !== '100%' ? field.param.height : defaultDimension;
+		field.param.height = field.param.height !== '100%' ? field.param.height : defaultDimension;
 	}
 }
 

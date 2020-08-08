@@ -5,6 +5,15 @@ CKEDITOR.plugins.add("imagePlaceholder", {
 	lang: ["en"],
 	requires: "dialog",
 	icons: "",
+	defaultImageData: {
+		label: 'image',
+		required: true,
+		param: {
+			align: 'float',
+			width: '120px',
+			height: '120px'
+		}
+	},
 	imageData: {
 		label: 'image',
 		required: true,
@@ -79,8 +88,18 @@ CKEDITOR.plugins.add("imagePlaceholder", {
 	setData: function (key, value) {
 		this.imageData[key] = value;
 	},
+	setDataParam: function (key, value) {
+		var par = {
+			width: this.imageData.param.width,
+			height: this.imageData.param.height,
+			align: this.imageData.param.align
+		};
+		par[key] = value;
+		this.imageData.param = par;
+	},
 	getData: function (key) {
-		return key ? this.imageData[key] : window.jQuery.extend(true, {}, this.imageData);
+		// clone object if need
+		return key ? this.imageData[key] : JSON.parse(JSON.stringify(this.imageData));
 	},
   onLoad: function () {
     var css = 'input[name="cke_image-placeholder_radio_radio"] { \
