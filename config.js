@@ -33,6 +33,7 @@ CKEDITOR.editorConfig = function( config ) {
 		'format,' +
 		'horizontalrule,' +
 		'htmlwriter,' +
+		'imagePlaceholder,' +
 		'indentblock,' +
 		'indentlist,' +
 		'indenttab,' +
@@ -47,6 +48,7 @@ CKEDITOR.editorConfig = function( config ) {
 		'pastetext,' +
 		'removeformat,' +
 		'showborders,' +
+    'smartfields,' +
 		'sourcearea,' +
 		'specialchar,' +
 		'stylescombo,' +
@@ -55,7 +57,6 @@ CKEDITOR.editorConfig = function( config ) {
 		'tabletools,' +
 		'tabletoolstoolbar,' +
     'toolbar,' +
-    'smartfields,' +
 		'undo';
 	config.languages = {
 		en : 1
