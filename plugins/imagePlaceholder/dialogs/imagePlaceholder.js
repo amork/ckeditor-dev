@@ -90,7 +90,7 @@ CKEDITOR.dialog.add('imagePlaceholder', function(editor) {
 			var width = field.param.width ? 'width=' + field.param.width : '';
 			var height = field.param.height !== '100%' ? 'height=' + field.param.height : '';
 			var path = field.value || editor.plugins.imagePlaceholder.path;
-			var src = ['src="', path, 'icons/preview-', (field.param.width === '100%' ? 'justify' : 'float'), '.png', '"'].join('');
+			var src = ['src="', path, 'icons/preview-', (field.param.align === 'justify' ? 'justify' : 'float'), '.png', '"'].join('');
 			var className = 'image-placeholder_cke align_' + (field.param.align || '') + (field.required ? ' cke_placeholder_required' : '');
 			var fragment = editor.getSelection().getRanges()[0].extractContents();
 			var floater = CKEDITOR.dom.element.createFromHtml([
@@ -114,7 +114,7 @@ CKEDITOR.dialog.add('imagePlaceholder', function(editor) {
 
 			this.setValueOf('tab-source', 'width', field.param.width);
 			this.setValueOf('tab-source', 'height', field.param.height);
-			this.setValueOf('tab-source', 'cke_image-placeholder_radio', field.param.width === '100%' ? 'justify' : 'float');
+			this.setValueOf('tab-source', 'cke_image-placeholder_radio', field.param.align === 'justify' ? 'justify' : 'float');
 			this.setValueOf('tab-source', 'required', field.required);
 
 			var width = this.getContentElement('tab-source', 'width').getInputElement();
