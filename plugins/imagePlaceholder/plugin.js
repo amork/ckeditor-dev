@@ -169,7 +169,7 @@ CKEDITOR.plugins.add("imagePlaceholder", {
 							'data-params': $1,
 							width: parsed.param.width || '120px',
 							height: parsed.param.height !== '100%' ? parsed.param.height : '',
-							src: parsed.value || path + 'icons/preview-' + (parsed.param.width === '100%' ? 'justify' : 'float') + '.png'
+							src: parsed.value || path + 'icons/preview-' + (parsed.param.align === 'justify' ? 'justify' : 'float') + '.png'
 						}
 					);
 
