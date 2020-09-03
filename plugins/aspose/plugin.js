@@ -149,16 +149,6 @@
 				}
 			});
 
-			editor.on('paste', function (event) {
-				event.data.dataValue = event.data.dataValue.replace(removePgbrReg, '');
-
-				if (config.singleParagraphEdit) {
-					setTimeout(function() {
-						useOnlyOneParagraph(editor, $(editor.editable().$).clone());
-					}, 20);
-				}
-			});
-
 			editor.on('change', function() {
 				if (debounced) {
 					clearTimeout(debounced);
@@ -219,49 +209,6 @@
 		}
 	});
 })();
-
-function useOnlyOneParagraph(editor, $html) {
-	var children = $html.children();
-	var TAGS_FOR_SKIP_CONVERTING = ['OL', 'UL', 'LI', 'TABLE', 'TR', 'TD'];
-	var TAGS_REPLACER_REG = /(<\/?)(p|div)/g;
-	var skipAppend = false;
-
-	if (children.length < 1 && $(children[0]).find('p, div').size === 0) {
-		return;
-	}
-
-	for(var i = 0; i < children.length; i++) {
-		var child = children[i];
-
-		if (['ING', 'PGBR'].indexOf(child.tagName) === -1 && !child.innerText) {
-			child.parentNode.removeChild(child);
-		}
-	}
-
-	children = $html.children();
-
-	for(var i = 0; i < children.length; i++) {
-		if (TAGS_FOR_SKIP_CONVERTING.indexOf(children[i].tagName) !== -1) {
-			skipAppend = true;
-		}
-	}
-
-	if (!skipAppend) {
-		children[0].innerHTML = children[0].innerHTML.replace(TAGS_REPLACER_REG, '$1span');
-
-		for(var i = 1; i < children.length; i++) {
-			var child = children[i];
-			var newChild = document.createElement('span', child.attributes);
-
-			newChild.innerHTML = child.innerHTML.replace(TAGS_REPLACER_REG, '$1span');
-			children[0].appendChild(newChild);
-			child.parentNode.removeChild(child);
-		}
-	}
-
-  editor.setData($html.html());
-  caretToEnd(editor);
-}
 
 function setTdWidth($editor) {
 	var ptPxCoef = 0.75;
