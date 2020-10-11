@@ -48,7 +48,9 @@
 			var styleObj = {};
 
 			for (var i = 0; i < styleNames.length; i++) {
-				styleObj[styleNames[i]] = this.defaultStyles[styleNames[i]];
+        if (this.defaultStyles[styleNames[i]]) {
+          styleObj[styleNames[i]] = this.defaultStyles[styleNames[i]];
+        }
 			}
 
 			return styleObj;
