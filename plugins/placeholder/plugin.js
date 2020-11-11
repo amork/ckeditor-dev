@@ -181,10 +181,19 @@
 			editor.dataProcessor.dataFilter.addRules({
 				text: function(text, node) {
 					var dtd = node.parent && CKEDITOR.dtd[node.parent.name];
-
 					// Skip the case when placeholder is in elements like <title> or <textarea>
 					// but upcast placeholder in custom elements (no DTD).
 					if (dtd && !dtd.span) return;
+
+					var parent = node.parent;
+					var isInTable = false
+					while(parent) {
+						if (parent.name === 'td') {
+							isInTable = true
+							break;
+						}
+						parent = parent.parent;
+					}
 
 					return text.replace(placeholderReplaceRegex, function(
 						match,
@@ -235,7 +244,7 @@
 
 						// Return outerhtml of widget wrapper so it will be placed
 						// as replacement.
-						return widgetWrapper.getOuterHtml() + '<span class="remove-me">&nbsp;</span>';
+						return widgetWrapper.getOuterHtml() + (isInTable ? '<span class="remove-me">&nbsp;</span>' : '');
 					});
 				}
 			});
