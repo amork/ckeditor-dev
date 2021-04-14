@@ -364,11 +364,19 @@
 					div.innerHTML = data.dataValue;
 					var children = div.children;
 
-					for(var i = 0; i < children.length; i++) {
-						Object.keys(defaultStyles).forEach(function(key) {
-							children[i].style[key] = defaultStyles[key];
-						});
+					function setDefaultStylesForChildren(children) {
+						for(var i = 0; i < children.length; i++) {
+							Object.keys(defaultStyles).forEach(function(key) {
+								if (children[i].tagName === 'SPAN') {
+									children[i].style[key] = defaultStyles[key];
+								} else {
+									setDefaultStylesForChildren(children[i].children)
+								}
+							});
+						}
 					}
+
+					setDefaultStylesForChildren(children)
 
 					data.dataValue = div.innerHTML;
 				}

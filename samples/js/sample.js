@@ -29,9 +29,8 @@ var initSample = ( function() {
       })),
 			defaultStyles: {
 				'font-size': '20pt',
-        'font-weight': 'bold',
+        'font-weight': 'normal',
 				'font-family': 'Lato',
-				color: 'red'
 			},
 			filebrowserUploadUrl: 'base64',
 			singleParagraphEdit: true,
