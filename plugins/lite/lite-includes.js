@@ -3528,7 +3528,7 @@
 			}
 		},
 		_isCurrentUserIceNode: function (A) {
-			var z = Boolean(A && c(A).attr(this.attributes.userId) === this.currentUser.id && this.currentUser.id);
+			var z = Boolean(A && c(A).attr(this.attributes.userId) === this.currentUser.id);
 			if (z && this._sessionId) {
 				z = A.getAttribute(this.attributes.sessionId) === this._sessionId
 			}
