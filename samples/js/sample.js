@@ -64,11 +64,11 @@ var initSample = ( function() {
     //   console.log('change', editor.getData())
     // })
 
-		// editor.on('lite:init', function(event) {
-		// 	this._lite = event.data.lite;
-		// 	this._lite.toggleTracking(true);
-		// 	this._lite.toggleShow(props.showTracking); // enable tracking by default
-		// });
+		editor.on('lite:init', function(event) {
+			this._lite = event.data.lite;
+			this._lite.toggleTracking(true);
+			this._lite.toggleShow(true); // enable tracking by default
+		});
 	};
 } )();
 

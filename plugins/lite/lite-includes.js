@@ -3108,7 +3108,7 @@
 					}
 				} else {
 					this._cleanupSelection(A, false, true);
-					if (this._isCurrentUserIceNode(this._getIceNode(A.startContainer, q))) {
+					if (this._isCurrentUserIceNode(this._getIceNode(A.startContainer, q)) && (A.endOffset < A.startContainer.length)) {
 						return false
 					}
 					if (C) {
